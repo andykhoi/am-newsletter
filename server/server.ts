@@ -8,10 +8,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.post('/subscribe', (req, res) => {
-	// make a post request to directmailmac containing body from request to /subscribe
-	// respond with the response from directmailmac
-
+app.post('/subscribe', (req, res) => {	
 	const email = JSON.stringify(req.body);
 	const credentials = `${process.env.DIRECT_MAIL_USER}:${process.env.DIRECT_MAIL_PASS}`;
 	const buff = Buffer.from(credentials);
@@ -28,17 +25,24 @@ app.post('/subscribe', (req, res) => {
 		},
 		body: email,
 	}
-	
-	const directmail_req = https.request(options, (res) => {
-		let data = '';
 
-		res.on('data', (chunk) => {
-			data += chunk;
+	// need to take the data from the response and pass it to the frontend
+	const directmail_req = https.request(options, (directmail_res) => {
+		let directmail_data = '';
+		let statusCode = directmail_res.statusCode;
+
+		directmail_res.on('data', (chunk) => {
+			directmail_data += chunk;
 		});
 
-		res.on('end', () => {
-			console.log(`Response ${data}`)
+		directmail_res.on('end', () => {
+			const data = {
+				directmail_data,
+				statusCode,
+			}
+			res.send(JSON.stringify(data));
 		});
+
 	});
 
 	directmail_req.write(email)

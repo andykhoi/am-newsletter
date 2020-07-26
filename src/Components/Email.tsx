@@ -7,28 +7,36 @@ import React, { FunctionComponent, useState } from 'react'
 // make an api call to directmailmac with the email address
 
 export const Email: FunctionComponent = () => {
-	// let [success, setSuccess] = useState<Boolean | null>(null);
+	let [success, setSuccess] = useState<Boolean | null>(null);
 	let [email, setEmail] = useState<string | undefined>('')
 
 	const submitHandler = (e:any) => {
-		// this should create a request to the directmailmac api
-		// on success should create a message 'success' on failure should 'fail'
 		e.preventDefault();
 
-		const url = 'http://localhost:3000/subscribe';
+		// const url = `${process.env.REACT_APP_DEV_SERVER}/subscribe`;
+		const url = process.env.REACT_APP_DEV_SERVER + '/subscribe';
+		const body = { email }
 		const options = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json; charset=utf-8',
 			},
-			body: JSON.stringify({ email }),
+			body: JSON.stringify(body),
 		}
 
-		fetch(url, options).then(res => res.json()).then(data => console.log(data));
+		// will have to include logic that handles specific errors (duplicate emails, failure to fetch, etc.)
+		fetch(url, options)
+		.then(res => res.json())
+		.then(data => {
+			console.log(data);
+			data.statusCode === 202 ? setSuccess(true) : setSuccess(false);
+		})
+		.catch(error => console.log(error))
 	}
 
 	return (
-		<form onSubmit={submitHandler}>
+		// if null do nothing, if false show fail, if true show success
+		<form onSubmit={submitHandler} className={success ? 'success' : (success === 'false' ? 'fail' : '')}>
 			<input type="email" value={email} onChange={(e:any) => setEmail(e.currentTarget.value)} required />
 			<input type="submit"/>
 		</form>
