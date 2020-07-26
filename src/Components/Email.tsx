@@ -6,8 +6,6 @@ import React, { FunctionComponent, useState } from 'react'
 
 // make an api call to directmailmac with the email address
 
-// test to see if I can send a POST request to the directmailmac api to add my email
-
 export const Email: FunctionComponent = () => {
 	// let [success, setSuccess] = useState<Boolean | null>(null);
 	let [email, setEmail] = useState<string | undefined>('')
@@ -16,7 +14,7 @@ export const Email: FunctionComponent = () => {
 		// this should create a request to the directmailmac api
 		// on success should create a message 'success' on failure should 'fail'
 		e.preventDefault();
-		
+
 		const url = 'http://localhost:3000/subscribe';
 		const options = {
 			method: 'POST',
@@ -47,6 +45,3 @@ export const Email: FunctionComponent = () => {
 // API key to the frontend. So I will have to create a server folder and configure a quick server to
 // request to from the app, which then will post request to the API, responding to the frontend with a success -- 
 // allowing the component to make necessary changes to styling.
-
-// I'm missing a lot of context about the backend and interworkings of the internet...
-// To get a better understanding read up!
