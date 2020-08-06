@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
+import './styles/base.sass'
 import { MobileApp } from './Components/MobileApp'
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
 	}, [windowResizeHandler]);
 
 	return (
-		<div className="Container">
+		<div className="App">
 			{
 				isMobile && <MobileApp />
 			}

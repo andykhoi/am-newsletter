@@ -1,1 +1,49 @@
-import React from 'react';
+import React, { FunctionComponent, useState } from 'react';
+import { Transition } from 'react-spring/renderprops';
+import { Canvas } from 'react-three-fiber';
+
+import { Sphere } from './Sphere';
+import { GradientShow } from './GradientShow';
+import { MobileEmailForm } from './MobileEmailForm';
+
+export const MobileAnimation: FunctionComponent = () => {
+	// mobile animation will handle state of the animation components
+	// const [darkMode, setDarkMode] = useState<Boolean>(false);
+	const [gradientActive, setGradientActive] = useState<Boolean>(false);
+	const [sphereState, setSphereState] = useState<{ hold: Boolean, direction: null | 'forwards' | 'backwards' }>({ hold: false, direction: null});
+	const [emailVisible, setEmailVisible] = useState<Boolean>(true);
+
+	return (
+		<div className="MobileAnimation">
+			<div className="logo">
+				<img src='../assets/logo.svg' alt='Logo' />
+			</div>
+			<Transition
+				items={gradientActive}
+				from={{ backgroundColor: 'transparent', opacity: 0}}
+				enter={{ opacity: 1 }}
+			>
+				{gradientActive => gradientActive && (props => <GradientShow props={props} />)}
+			</Transition>
+			<Canvas
+				camera={{position: [0, 0, 500]}}
+			>
+				<Sphere
+					radius={135}
+					setEmailVisible={setEmailVisible}
+					startPosition={[0, 135, 0]}
+					sphereState={sphereState}
+					endPosition={[0, -120, 646]}
+					setSphereState={setSphereState}
+					setGradientActive={setGradientActive}
+					breakPoint={468}
+				/>
+			</Canvas>
+			{/* <div className="hold-icon">
+				<img src="../assets/holdicon.svg" alt="Press and hold to learn more about Andy Mag"/>
+				<p>Press and hold to learn more about Andy Mag</p>
+			</div> */}
+			<MobileEmailForm sphereState={sphereState} emailVisible={emailVisible}/>
+ 		</div>
+	)
+}
