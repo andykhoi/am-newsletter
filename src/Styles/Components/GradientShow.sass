@@ -1,15 +1,21 @@
 .GradientShow
-	background: black
 	height: 100%
 	width: 100%
+	position: absolute
+	top: 0
+	z-index: 3
 	.grid
 		height: 100%
 		.text
+			grid-area: 1 / 2 / -1 / 6
 			text-align: center
-			grid-column: 2 / 6
+			// grid-column: 2 / 6
 			display: flex
 			flex-direction: column
 			align-items: center
 			justify-content: center
 			font-family: Overpass
 			font-weight: bold
+		.gradient
+			grid-area: 1 / 1 / -1 / -1
+			z-index: -1
