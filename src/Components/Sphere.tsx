@@ -26,7 +26,6 @@ export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, 
 	const sphereRef = useRef<THREE.Points | null>(null);
 	const hemisphereRef = useRef<THREE.Points | null>(null);
 	const currentPosition = useRef<[number, number, number]>(startPosition);
-	
 	const sphereAnimationProps = useSpring({
 		config: { mass: 1.8, tension: 84, friction: 22, clamp: true },
 		pointsPosition: !sphereState.hold ? startPosition : endPosition,
