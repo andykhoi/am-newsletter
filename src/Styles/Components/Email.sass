@@ -1,0 +1,31 @@
+.Email
+	input[type='email']
+		font-family: Overpass
+		font-size: 1.2em
+		border: none
+		margin: 0 auto
+		-webkit-appearance: none
+		background: transparent
+		display: block
+		width: 250px
+		outline: none
+		padding: 0px
+		border-bottom: 2px solid black
+		&::placeholder
+			transition: color 150
+			color: black
+		&.darkmode
+			&::placeholder
+				color: white
+	input[type='submit']
+		width: 100%
+		font-family: Overpass
+		-webkit-appearance: none
+		margin-top: 1.8em
+		box-shadow: inset 0px 0px 2px 1px #FFFFFF
+		border: none
+		border-radius: 8px
+		letter-spacing: 1px
+		padding: 0.7em
+		color: white
+		background-image: linear-gradient(to right, #D631D3, #AC16A7)

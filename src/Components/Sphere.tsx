@@ -6,6 +6,7 @@ import { DoubleSide } from 'three/';
 
 interface SphereProps {
 	radius: number,
+	setInstructionsVisible: React.Dispatch<React.SetStateAction<boolean>>,
 	setEmailVisible: React.Dispatch<React.SetStateAction<Boolean>>,
 	sphereAnimationProps?: any,
 	setGradientActive: React.Dispatch<React.SetStateAction<Boolean>>,
@@ -22,7 +23,7 @@ interface SphereProps {
 	breakPoint: number,
 }
 
-export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, sphereState, setSphereState, setGradientActive, breakPoint, endPosition, setEmailVisible }) => {
+export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, sphereState, setSphereState, setGradientActive, breakPoint, endPosition, setEmailVisible, setInstructionsVisible }) => {
 	const sphereRef = useRef<THREE.Points | null>(null);
 	const hemisphereRef = useRef<THREE.Points | null>(null);
 	const currentPosition = useRef<[number, number, number]>(startPosition);
@@ -34,15 +35,17 @@ export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, 
 			currentPosition.current = arg.pointsPosition
 			if (currentPosition.current[2] > 0 && currentPosition.current[2] < 50) {
 				if (sphereState.direction === 'backwards') {
-					setEmailVisible(true)
+					setEmailVisible(() => true)
+					setInstructionsVisible(() => true)
 				} else {
-					setEmailVisible(false);
+					setEmailVisible(() => false);
+					setInstructionsVisible(() => false)
 				}
 			}
 		},
 		onRest: (arg: any) => { 
 			if (currentPosition.current.length === endPosition.length && currentPosition.current.every((position: number, index: number) => position === endPosition[index])) {
-				setGradientActive(true);
+				setGradientActive(() => true);
 			}
 		}
 	})

@@ -5,7 +5,6 @@ import { useSpring as useSpringThree, a as aThree } from 'react-spring/three'
 import { useSpring, animated } from 'react-spring'
 import * as THREE from 'three/';
 import { Spring, Transition } from 'react-spring/renderprops';
-import { config } from 'process';
 
 interface GradientShowProps {
 	props?: any
@@ -16,6 +15,7 @@ interface GradientShowProps {
 }
 interface PointerState {
 	active: Boolean,
+	initial_y_direction: 'up' | 'down' | null
 	x_start: number | null
 	y_start: number | null
 	y_travel: number | null
@@ -31,6 +31,7 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 
 	let [pointerState, setPointerState] = useState<PointerState>({
 		active: false,
+		initial_y_direction: null,
 		x_start: null,
 		y_start: null,
 		y_travel: null, // length of y drag, null if active is false
@@ -38,22 +39,19 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 		swipePercentage: null // y_travel / swipeThreshold
 	})
 
-	// need a state that everything will follow
-	// animations depend on cursor and chapter, chapters are set on mount and on swipe threshold
-	// chapters are used for determining what the initial and end state is
 	const [chapterIndex, setChapterIndex] = useState<number>(0);
 	const MAX_CHAPTERS = useRef<number>(React.Children.toArray(children).length);
-	// all of these will be set to their values when on scroll
-	// at swipe threshold all values will move to next position automatically
-		// know the end positions of all chapters, simply need to calculate the correct ratios
-		// according to the swipe percentage -- percentage == 100%, set all to endPosition
-	// will have to create functions that calculate these values on each pointer move
-	// the animations will animate according to active chapter
+
+	const MAX_TEXT_SHADOW = useRef<number>(10);
+	const MAX_TEXT_OPACITY = useRef<number>(1);
+	
 	let [textOpacity, setTextOpacity] = useState<number>(1);
 	let [textShadow, setTextShadow] = useState<number>(0);
 	let [lightColor, setLightColor] = useState<string>(chapterConfigs[chapterIndex].lightColor)
 	let [lightPosition, setLightPosition] = useState<[number, number, number]>(chapterConfigs[chapterIndex].startLightPosition);
+	let [lightRotation, setLightRotation] = useState<[number, number, number]>(chapterConfigs[chapterIndex].startLightRotation);
 	let [planeColor, setPlaneColor] = useState<string>(chapterConfigs[chapterIndex].planeColor)
+	let [lightIntensity, setLightIntensity] = useState<number>(chapterConfigs[chapterIndex].lightIntensity)
 
 	// plane color
 	const planeAnimation = useSpringThree({
@@ -64,6 +62,8 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 	const rectLightAnimation = useSpringThree({
 		position: lightPosition,
 		color: lightColor,
+		rotation: lightRotation,
+		intensity: lightIntensity
 	});
 
 	// container opacity & z-index
@@ -76,6 +76,7 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 	const resetPointer = useCallback(() => {
 		setPointerState(() => ({
 			active: false,
+			initial_y_direction: null,
 			x_start: null,
 			y_start: null,
 			y_travel: null,
@@ -88,7 +89,8 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 		setLightColor(() => chapterConfigs[chapterIndex].lightColor);
 		setLightPosition(() => chapterConfigs[chapterIndex].startLightPosition);
 		setPlaneColor(() => chapterConfigs[chapterIndex].planeColor);
-		setTextShadow(() => 0)
+		setTextShadow(() => 0);
+		setTextOpacity(() => 1);
 	}, [chapterIndex, chapterConfigs])
 
 	const pointerDownHandler = useCallback((e: PointerEvent) => {
@@ -116,20 +118,53 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 			const y_position = e.clientY;
 			const x_position = e.clientX;
 			setPointerState(prevState => {
+				let updatedValues;
 				const y_travel = prevState.y_start ? y_position - prevState.y_start : null;
 				const x_travel = prevState.x_start ? x_position - prevState.x_start : null;
-				const swipePercentage = y_travel !== null ? y_travel / swipeThreshold : null;
-				const updatedValues = {
-					y_travel,
-					x_travel,
-					swipePercentage,
+				
+				if (prevState.initial_y_direction === null) {
+					let initial_y_direction: 'up' | 'down' | null = null;
+					if (y_travel) {
+						if (y_travel < 0) {
+							initial_y_direction = 'up';
+						} else if (y_travel > 0) {
+							initial_y_direction = 'down';
+						}
+					}
+					updatedValues = {
+						y_travel,
+						x_travel,
+						initial_y_direction,
+					}
+				} else if (prevState.initial_y_direction !== null) {
+					let swipePercentage = y_travel !== null ? y_travel / swipeThreshold : null;
+					if (prevState.initial_y_direction === 'up' && chapterIndex < MAX_CHAPTERS.current - 1) {
+						if (swipePercentage && swipePercentage < 0) {
+							if (Math.abs(swipePercentage) < 0.10) swipePercentage = 0;
+							updatedValues = {
+								y_travel,
+								x_travel,
+								swipePercentage,
+							}
+						}
+					} else if (prevState.initial_y_direction === 'down' && chapterIndex > 0) {
+						if (swipePercentage && swipePercentage > 0) {
+							if (Math.abs(swipePercentage) < 0.10) swipePercentage = 0;
+							updatedValues = {
+								y_travel,
+								x_travel,
+								swipePercentage,
+							}
+						}
+					}	
 				}
+
 				return {
 					...prevState, ...updatedValues
 				}
 			})
 		}
-	}, [pointerState, swipeThreshold])
+	}, [pointerState, swipeThreshold, chapterIndex])
 
 	useEffect(() => {
 		const el = containerRef.current
@@ -148,30 +183,26 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 	}, [pointerMoveHandler, pointerDownHandler, pointerUpHandler])
 
 	useEffect(() => {
-		console.log(pointerState);
-		if (pointerState.active) {
-			// if |swipePercentage >= 1| set all animation properties to the starts of the next chapter
-			if (pointerState.swipePercentage !== null) {
-				if (Math.abs(pointerState.swipePercentage) >= 1) {
-					pointerState.swipePercentage < 0 ? setChapterIndex(prevState => prevState + 1) : setChapterIndex(prevState => prevState - 1)
+		const { 
+			active,
+			swipePercentage,
+		} = pointerState;
 
-					// reset pointer, prevent unintended side effects from swiping for too long
+		if (active) {
+			if (swipePercentage !== null) {
+				const absSwipePercentage = Math.abs(swipePercentage);
+				if (absSwipePercentage >= 1) {
+					swipePercentage < 0 ? setChapterIndex(prevState => prevState + 1) : setChapterIndex(prevState => prevState - 1)
 					resetPointer();
-				} else if (Math.abs(pointerState.swipePercentage) >= 0 && Math.abs(pointerState.swipePercentage) < 1) {
-					if (pointerState.swipePercentage < 0) {
-						setTextShadow(prevState => prevState + 0.7)
-					} else {
-						setTextShadow(prevState => prevState - 0.7)
-					}
+				} else if (absSwipePercentage >= 0 && absSwipePercentage < 1) {
+					// do not set higher than max text shadow
+					console.log(absSwipePercentage);
+					setTextShadow(() => absSwipePercentage * MAX_TEXT_SHADOW.current)
+					setTextOpacity(() => MAX_TEXT_OPACITY.current - absSwipePercentage)
 					// setLightPosition(() => )
-					// calculate the correct values of position and text shadow
-					// can simply keep raising these values until reaches threshold
-					
-					// setAnimationValues()
 				}
 			}
 		} else {
-			// reset values back to initial chapter state
 			resetAnimationValues();
 		}
 	}, [pointerState, resetPointer, resetAnimationValues])
@@ -179,17 +210,12 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 	useDidUpdate(() => {
 		setLightColor(() => chapterConfigs[chapterIndex].lightColor);
 		setLightPosition(() => chapterConfigs[chapterIndex].startLightPosition);
+		setLightRotation(() => chapterConfigs[chapterIndex].startLightRotation);
+		setLightIntensity(() => chapterConfigs[chapterIndex].lightIntensity)
 		setPlaneColor(() => chapterConfigs[chapterIndex].planeColor);
+		setTextOpacity(() => 1)
 		setTextShadow(() => 0)
 	}, [chapterIndex, chapterConfigs])
-
-	// useEffect(() => {
-	// 	// set lightposition depending on y_travel
-	// 	const travelRatio = pointerState.y_travel ? pointerState.y_travel / swipeThreshold : 0;
-	// 	const difference = 220 - nextPosition.current[0]
-	// 	const x_pos = travelRatio !== null ? (difference * travelRatio) + 220 : 0;
-	// 	// x_pos && setLightPosition([220 + x_pos, lightPosition[1], lightPosition[2]])
-	// }, [pointerState, swipeThreshold, lightPosition])
 
 	return (
 		<animated.div className="GradientShow"
@@ -202,9 +228,9 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 					items={chapterIndex}
 					// config={{ }}
 					from={{ opacity: 0 }}
-					update={{ textShadow: `0px 0px ${textShadow}px black`, config: { mass: 1, tension: 190, friction: 20, clamp: true }}}
+					update={{ textShadow: `0px 0px ${textShadow}px black`, opacity: textOpacity, config: { mass: 1, tension: 190, friction: 20, clamp: true }}}
 					enter={{ textShadow: `0px 0px 0px black`, opacity: 1 }}
-					leave={{ textShadow: `0px 0px 30px black`, opacity: 0 }}
+					leave={{ textShadow: `0px 0px ${MAX_TEXT_SHADOW}px black`, opacity: 0 }}
 				>
 					{ chapterIndex => props => React.cloneElement(React.Children.toArray(children)[chapterIndex] as React.ReactElement<any>, { style: props })}
 				</Transition>
@@ -213,9 +239,10 @@ export const GradientShow: FunctionComponent<GradientShowProps> = ({ gradientAct
 					<aThree.rectAreaLight
 						position={rectLightAnimation.position}
 						color={rectLightAnimation.color}
-						rotation={[0, 0, -Math.PI/12]}
-						intensity={3.1}
-						width={180}
+						rotation={rectLightAnimation.rotation}
+						intensity={rectLightAnimation.intensity}
+						// distance={2}/
+						width={200}
 						height={600}
 						lookAt={() => planeRef.current && planeRef.current.position} />
 					<mesh position={[0, 0, -150]} ref={planeRef}>
