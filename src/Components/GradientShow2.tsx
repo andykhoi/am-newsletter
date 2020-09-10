@@ -267,7 +267,7 @@ export const GradientShow2: FunctionComponent<GradientShowProps> = ({ gradientAc
 					resetPointer();
 				} else if (absSwipePercentage >= 0 && absSwipePercentage < 1) {
 					setTextShadow(() => 4 + (absSwipePercentage * MAX_TEXT_SHADOW.current))
-					setTextOpacity(() => 0.7 - absSwipePercentage)
+					setTextOpacity(() => 1 - (absSwipePercentage * 0.5))
 					if (absSwipePercentage >= 0.70) {
 						setLightPosition(() => [48, 120, 72])
 					} else if (absSwipePercentage >= 0.50) {
@@ -277,9 +277,9 @@ export const GradientShow2: FunctionComponent<GradientShowProps> = ({ gradientAc
 					}
 				}
 			} else if (initial_y_direction === null) {
-				setTextShadow(() => 4)
-				setTextOpacity(() => 0.7)
-				setLightPosition(() => [15, -52.5, 31.5])
+				setTextShadow(() => 3.5)
+				// setTextOpacity(() => 0.8)
+				setLightPosition(() => [10, -52.5, 31.5])
 			} else if (chapterIndex === 0) {
 				if (initial_y_direction === 'down') resetPointer();
 			}
@@ -319,7 +319,7 @@ export const GradientShow2: FunctionComponent<GradientShowProps> = ({ gradientAc
 				<Transition
 					items={chapterIndex}
 					from={{ opacity: 0, textShadow: `0px 0px 0px ${textColor}`, immediate: (key: any) => key === 'textShadow' }}
-					update={{ textShadow: `0px 0px ${textShadow}px ${textColor}`, config: { mass: 1, tension: 190, friction: 20, clamp: true }}}
+					update={{ opacity: textOpacity, textShadow: `0px 0px ${textShadow}px ${textColor}`, config: { mass: 1, tension: 190, friction: 20, clamp: true }}}
 					enter={{ opacity: 1 }}
 					leave={{ textShadow: `0px 0px ${MAX_TEXT_SHADOW}px black`, opacity: 0, config: { mass: 1, friction: 10, clamp: true }}}
 				>

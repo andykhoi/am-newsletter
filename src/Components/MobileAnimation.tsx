@@ -31,10 +31,10 @@ export const MobileAnimation: FunctionComponent = () => {
 				lightColor: '#e75a81',
 			},
 			{
-				lightIntensity: 1.7,
+				lightIntensity: 1.45,
 				textColor: '#e75a81',
 				planeColor: '#FFFFFF',
-				lightColor: '#C9C9C9'
+				lightColor: '#EAEAEA'
 			},
 			{
 				lightIntensity: 1,
@@ -46,14 +46,14 @@ export const MobileAnimation: FunctionComponent = () => {
 			config = [{
 				lightIntensity: 0,
 				textColor: '#972C95',
-				planeColor: '#FFFFFF',
-				lightColor: '#FFFFFF',
+				planeColor: '#000000',
+				lightColor: '#000000',
 			},
 			{
-				lightIntensity: 1.7,
+				lightIntensity: 1.45,
 				textColor: '#000000',
 				planeColor: '#FFFFFF',
-				lightColor: '#C9C9C9',
+				lightColor: '#EAEAEA',
 			},
 			{
 				lightIntensity: 1.3,
