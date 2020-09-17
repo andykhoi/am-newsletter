@@ -1,12 +1,16 @@
 import React, { FunctionComponent, useState } from 'react'
+import { useSpring, animated } from 'react-spring';
 
 // email form should add email to mailing list on directmailmac 
 // on success there should be some indication on the frontend -- turns green with a success message
 // on failure there should be some indication on the frontend -- turns red with an error message
 
 // make an api call to directmailmac with the email address
+interface EmailProps {
+	darkMode: Boolean,
+}
 
-export const Email: FunctionComponent = () => {
+export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	let [success, setSuccess] = useState<Boolean | null>(null);
 	let [email, setEmail] = useState<string | undefined>('')
 
@@ -34,11 +38,22 @@ export const Email: FunctionComponent = () => {
 		.catch(error => console.log(error))
 	}
 
+	const emailInputProps = useSpring({
+		color: darkMode ? '#FFFFFF' : '#000000',
+		borderBottom: darkMode ? '1.5px solid #FFFFFF' : '1.5px solid #000000',
+		config: { duration: 130 }
+	})
+
+	const submitButtonProps = useSpring({
+		boxShadow: darkMode ? 'inset 0px 0px 1px 0px #FFFFFF' : 'inset 0px 0px 2px 1px #FFFFFF',
+		immediate: key => key === 'boxShadow'
+	})
+
 	return (
 		// if null do nothing, if false show fail, if true show success
-		<form onSubmit={submitHandler} className={success ? 'success' : (success === 'false' ? 'fail' : '')}>
-			<input type="email" value={email} onChange={(e:any) => setEmail(e.currentTarget.value)} required />
-			<input type="submit"/>
+		<form onSubmit={submitHandler} className={success ? 'Email success' : (success === 'false' ? 'Email fail' : 'Email')}>
+			<animated.input className={darkMode ? 'darkmode' : ''} style={emailInputProps} type="email" value={email} placeholder='email' onChange={(e:any) => setEmail(e.currentTarget.value)} required />
+			<animated.input style={submitButtonProps} type="submit" value="SUBSCRIBE"/>
 		</form>
 	)
 }

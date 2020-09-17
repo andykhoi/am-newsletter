@@ -1,0 +1,30 @@
+.GradientShow
+	touch-action: none
+	height: 100%
+	width: 100%
+	position: absolute
+	top: 0
+	// z-index: 1
+	.scroll-indicator
+		position: absolute
+		width: 3px
+		height: 19px
+		top: 55px
+		left: 70px
+	.grid
+		height: 100%
+		.text
+			color: transparent
+			grid-area: 1 / 1 / -1 / -1
+			// text-align: center
+			// grid-column: 2 / 6
+			padding: 0em 2em
+			display: flex
+			flex-direction: column
+			// align-items: center
+			justify-content: center
+			font-family: Overpass Extra Bold
+			// font-weight: bold
+		.gradient
+			grid-area: 1 / 1 / -1 / -1
+			z-index: -1
