@@ -1,0 +1,25 @@
+.Text
+	width: 100%
+	height: 100%
+	// align-items: center
+	.chapter
+		// grid-column: 1 / -1
+		grid-area: 1 / 1 / -1 / -1
+		display: flex
+		flex-direction: column
+		justify-content: center
+		&.out-down span span
+			transform: translateY(100%)
+		&.out-up span span
+			transform: translateY(-100%)
+		&.in span span
+			transform: translateY(0%)
+		span
+			display: block
+			text-align: center
+			font-family: Overpass Extra Bold
+			overflow: hidden
+			span
+				transform: translateY(100%)
+				transition: transform 0.9s cubic-bezier(.5,0,0,1),-webkit-transform 1s cubic-bezier(.5,0,0,1)
+				
