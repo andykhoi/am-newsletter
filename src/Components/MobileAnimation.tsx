@@ -118,6 +118,7 @@ export const MobileAnimation: FunctionComponent = () => {
 				<div className="text">
 					<h2>The most damaging phrase in language is 'It's always been done that way.'</h2>
 					<h4 className="spacer-top-1">- Admiral Grace Hopper</h4>
+					<p className="begin">Scroll to begin.</p>
 				</div>
 				<div className="text">
 					<h2>Andy Mag is an experiential magazine that enables readers to interact (engage) with diverse themes and ideas.</h2>
