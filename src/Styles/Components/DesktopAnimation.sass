@@ -4,8 +4,32 @@
 	display: flex
 	justify-content: center
 	align-items: center
+	transition: background-color 500ms linear
+	.logo
+		.scroll-indicator
+			position: absolute
+			width: 3px
+			height: 19px
+			left: 47px
 	.div1
 		position: relative
 		overflow: hidden
 		width: 200px
 		height: 150px
+	.SubscribeButton
+		position: absolute
+		bottom: 7em
+		button
+			width: 276px
+			border-radius: 10px
+			color: white
+			letter-spacing: 1px
+			font-family: Aileron
+			height: 47px
+			-webkit-appearance: none
+			background-color: transparent
+			transition: box-shadow 500ms linear
+			// box-shadow: 1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3
+			border: none
+			&:focus
+				outline: none

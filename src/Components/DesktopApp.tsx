@@ -1,5 +1,12 @@
-import React, { FunctionComponent, useState, useRef, createRef, useCallback, useEffect } from 'react';
-// import { useSpring, animated } from 'react-spring';
+import React, { FunctionComponent, useState, useRef, createRef, useCallback, useEffect, useMemo } from 'react';
+import { usePrevious } from '../hooks/usePrevious';
+import { useDidUpdate } from '../hooks/useDidUpdate';
+import { useSpring, animated } from 'react-spring';
+import { Canvas, useThree } from 'react-three-fiber';
+import * as THREE from 'three/';
+
+import { DesktopText } from './DesktopText';
+import { DesktopOrb } from './DesktopOrb';
 
 export const DesktopApp: FunctionComponent = () => {
 	/*
@@ -66,92 +73,89 @@ export const DesktopApp: FunctionComponent = () => {
 	*/
 	// depending on the direction of the swipe: cause the leave to move in that direction
 	// on load chapter 1 text translates up
-	let [ chapterIndex, setChapterIndex ] = useState<number | null>(0);
-	let [wheelDirection, setWheelDirection] = useState<'up' | 'down' | null>(null)
+	let [chapterIndex, setChapterIndex] = useState<number>(0);
+	let [backgroundColor, setBackgroundColor] = useState<string>('#D695AB')
+	let [subscribeActive, setSubscribeActive] = useState<boolean>(false);
+	let [buttonShadow, setButtonShadow] = useState<string>('1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
+	const scrollIndicatorPositions = useRef<number[]>([0, 9, 18, 27]);
+	let [scrollIndicatorPosition, setScrollIndicatorPosition] = useState<number>(scrollIndicatorPositions.current[0])
+	let [containerWidth, setContainerWidth] = useState<number | null>(null);
+	let [containerHeight, setContainerHeight] = useState<number | null>(null);
 	
-	let chapterRefs = useRef<React.RefObject<HTMLDivElement>[]>([createRef<HTMLDivElement>(), createRef<HTMLDivElement>(), createRef<HTMLDivElement>(), createRef<HTMLDivElement>()]);
-	let wheelThreshold = useRef<number>(80);
-	
-	const wheelHandler = useCallback((event: React.WheelEvent<HTMLDivElement>, previous: number | null, next: number | null) => {
-		// set wheel direction and chapterindex
+	// const { viewport } = useThree()
 
-		const { deltaY } = event;
-		let direction: 'up' | 'down' | null = null;
-		// deltaY < 0 ? direction = 'down' : direction = 'up';
-		if (deltaY < 0) {
-			direction = 'down'
-		} else if (deltaY > 0) {
-			direction = 'up'
-		}
+	let wheelThreshold = useRef<number>(40);
+	let containerRef = useRef<HTMLDivElement>(null);
 
-		if (Math.abs(deltaY) > wheelThreshold.current) {
-			setChapterIndex(() => chapterIndex)
-			setWheelDirection(() => direction)
+	const scrollIndicatorAnimate = useSpring({
+		top: scrollIndicatorPosition,
+		opacity: chapterIndex === null ? '0' : '1',
+		config: { clamp: true },
+		backgroundColor: 'black',
+	})
+
+	useEffect(() => {
+		setScrollIndicatorPosition(() => scrollIndicatorPositions.current[chapterIndex])
+	}, [chapterIndex])
+
+	useEffect(() => {
+		if (containerRef.current) {
+			setContainerHeight(() => containerRef.current ? containerRef.current.clientHeight : null);
+			setContainerWidth(() => containerRef.current ? containerRef.current.clientWidth : null);
+			window.addEventListener('resize', () => {
+				setContainerWidth(() => containerRef.current ? containerRef.current.clientWidth : null);
+				setContainerHeight(() => containerRef.current ? containerRef.current.clientHeight : null);
+			})
 		}
 	}, [])
 
-	useEffect(() => {
-		if (chapterIndex !== null && wheelDirection !== null) {
-			if (wheelDirection === 'up') {
-				chapterRefs.current[chapterIndex].current?.classList.add('out-up')
-			} else if (wheelDirection === 'down') {
-				chapterRefs.current[chapterIndex].current?.classList.add('out-down')
-			}
-		}
-	}, [chapterIndex, wheelDirection])
+	// useEffect(() => {
+	// 	if (containerWidth !== null && containerHeight !== null) {
+	// 		const aspect = containerWidth / containerHeight;
+	// 		camera.aspect = aspect;
+	// 		camera.updateProjectMatrix();
+	// 	}
+	// }, [containerWidth, containerHeight, camera])
 
-	//stack and overflow all text -- default is overflown down -- stages is shown, transition up, transition down -- 
 	return (
-		<div className="DesktopAnimation">
-			<div className="Text grid">
-				<div
-					className="chapter"
-					onWheel={(e) => wheelHandler(e, null, 1)}
-					ref={chapterRefs.current[0]}
+		<div
+			ref={containerRef}
+			className="DesktopAnimation"
+			style={{
+				backgroundColor: backgroundColor
+			}}
+		>
+			<Canvas
+				className="Orb"
+				style={{
+					position: 'absolute'
+				}}
+				orthographic
+				camera={{
+					left: containerWidth ? -containerWidth / 2 : undefined,
+					right: containerWidth ? containerWidth / 2 : undefined,
+					top: containerHeight ? containerHeight / 2 : undefined,
+					bottom: containerHeight ? -containerHeight / 2 : undefined,
+					near: 300,
+					far: -300
+				}}
+			>	
+				<DesktopOrb containerWidth={containerWidth} containerHeight={containerHeight} chapterIndex={chapterIndex} />
+			</Canvas>
+			<div className="logo" onClick={() => setChapterIndex(() => 0)}>
+				<img src='../assets/logo.svg' alt='Logo' />
+				<animated.div className="scroll-indicator" style={scrollIndicatorAnimate} />
+			</div>
+			<DesktopText chapterIndex={chapterIndex} setChapterIndex={setChapterIndex} wheelThreshold={wheelThreshold.current} setBackgroundColor={setBackgroundColor} setButtonShadow={setButtonShadow} />
+			<div className="SubscribeButton">
+				<button
+					onClick={() => setSubscribeActive(() => true)}
+					style={{
+						boxShadow: buttonShadow
+					}}
 				>
-					<span>
-						<span><h2>The most damaging phrase in language is 'It's</h2></span>
-					</span>
-					<span>
-						<span style={{ transitionDelay: '0.06s'}}><h2>always been done that way'</h2></span>
-					</span>
-					<span className="spacer-top-1">
-						<span style={{ transitionDelay: '0.1s'}}><h2>- Admiral Grace Hopper</h2></span>
-					</span>
-				</div>
-				<div
-					className="chapter"
-					onWheel={(e) => wheelHandler(e, 0, 2)}
-					ref={chapterRefs.current[1]}
-				>
-					<span>
-						<span>Andy Mag is an experiential magazine that</span>
-					</span>
-					<span>
-						<span>enables readers to interact (engage) with diverse</span>
-					</span>
-					<span>
-						<span>themes and ideas.</span>
-					</span>
-				</div>
-				<div
-					className="chapter"
-					onWheel={(e) => wheelHandler(e, 1, 3)}
-					ref={chapterRefs.current[2]}
-				>
-					<span>
-						<span>Because a great story is worth remembering.</span>
-					</span>
-				</div>
-				<div
-					className="chapter"
-					onWheel={(e) => wheelHandler(e, 2, null)}
-					ref={chapterRefs.current[3]}
-				>
-					<span>
-						<span>Subscribe to Andy Mag for updates.</span>
-					</span>
-				</div>
+					SUBSCRIBE
+				</button>
 			</div>
 		</div>
 	)
