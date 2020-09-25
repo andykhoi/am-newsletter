@@ -110,7 +110,7 @@ export const MobileAnimation: FunctionComponent = () => {
 				chapterIndex={chapterIndex}
 				setChapterIndex={setChapterIndex}
 				gradientActive={gradientActive}
-				swipeThreshold={250}
+				swipeThreshold={150}
 				chapterConfigs={gradientConfig}
 				setGradientActive={setGradientActive}
 				setSphereState={setSphereState}
