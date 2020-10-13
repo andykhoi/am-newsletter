@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useRef, createRef, useEffect, useCallback, useState } from 'react';
+import { useSpring, animated } from 'react-spring';
 import { useDidUpdate } from '../hooks/useDidUpdate';
 
 interface DesktopTextProps {
@@ -7,12 +8,33 @@ interface DesktopTextProps {
 	wheelThreshold: number
 	setBackgroundColor: React.Dispatch<React.SetStateAction<string>>
 	setButtonShadow: React.Dispatch<React.SetStateAction<string>>
+	// orbMovingState: "out-forward" | "out-backward" | "to-forward" | "to-backward" | "resting"
+	setOrbMovingState: React.Dispatch<React.SetStateAction<"out" | "to" | "resting" | "intersecting" | "in" | "subscribe">>
+	subscribeActive: boolean
 }
 
-export const DesktopText: FunctionComponent<DesktopTextProps> = ({ chapterIndex, setChapterIndex, wheelThreshold, setBackgroundColor, setButtonShadow }) => {
+export const DesktopText: FunctionComponent<DesktopTextProps> = ({ 
+	chapterIndex,
+	setChapterIndex,
+	wheelThreshold,
+	setBackgroundColor,
+	setButtonShadow,
+	setOrbMovingState,
+	subscribeActive
+}) => {
 	let chapterRefs = useRef<React.RefObject<HTMLDivElement>[]>([createRef<HTMLDivElement>(), createRef<HTMLDivElement>(), createRef<HTMLDivElement>(), createRef<HTMLDivElement>()]);
 	let [textTransitioning, setTextTransitioning] = useState<'out-down' | 'out-up' | 'in' | null>(null)
 
+	const textAnimation = useSpring({
+		opacity: subscribeActive ? 0 : 1,
+		zIndex: subscribeActive ? -1 : 0,
+		config: {
+			mass: 1,
+			friction: 4,
+			clamp: true,
+		}
+	})
+	
 	useEffect(() => {
 		const {
 			current: chapter = null
@@ -21,37 +43,47 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({ chapterIndex,
 		chapter?.classList.remove('out-down')
 	}, [])
 
+	useEffect(() => {
+		if (subscribeActive) {
+			setBackgroundColor(() => '#231B1B')
+		}
+	}, [subscribeActive, setBackgroundColor])
+
 	useDidUpdate(() => {
 		if (chapterIndex !== null) {
 			const {
 				current: chapter = null
 			} = chapterRefs.current[chapterIndex]
-
-			chapter?.classList.remove('out-down', 'out-up')
+			
 			setTextTransitioning(() => 'in')
+			chapter?.classList.remove('out-down', 'out-up')
 		}
 	}, [chapterIndex])
 
 	const wheelHandler = useCallback((event: React.WheelEvent<HTMLDivElement>) => {
 		const { deltaY } = event;
-		if (Math.abs(deltaY) > wheelThreshold) {
-			if (chapterIndex !== null) {
-				const {
-					current: chapter = null
-				} = chapterRefs.current[chapterIndex]
-				if (deltaY > 0 && chapterIndex < 3) {
-					chapter?.classList.add('out-up');
-					setTextTransitioning(() => 'out-up')
-				} else if (deltaY < 0 && chapterIndex > 0) {
-					chapter?.classList.add('out-down');
-					setTextTransitioning(() => 'out-down')
+		if (textTransitioning === null) {
+			if (Math.abs(deltaY) > wheelThreshold) {
+				if (chapterIndex !== null) {
+					const {
+						current: chapter = null
+					} = chapterRefs.current[chapterIndex]
+					if (deltaY > 0 && chapterIndex < 3) {
+						chapter?.classList.add('out-up');
+						setTextTransitioning(() => 'out-up')
+						setOrbMovingState(() => 'out')
+					} else if (deltaY < 0 && chapterIndex > 0) {
+						chapter?.classList.add('out-down');
+						setTextTransitioning(() => 'out-down')
+						setOrbMovingState(() => 'out')
+					}
 				}
 			}
 		}
-	}, [chapterIndex, wheelThreshold])
+	}, [chapterIndex, wheelThreshold, textTransitioning, setOrbMovingState])
 
 	return (
-		<div className="Text grid">
+		<animated.div className="Text grid" style={textAnimation}>
 			<div
 				className="chapter out-down"
 				onWheel={(e) => wheelHandler(e)}
@@ -71,6 +103,8 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({ chapterIndex,
 							if (textTransitioning === 'out-up') {
 								setChapterIndex(() => 1)
 								setBackgroundColor(() => '#D695C7')
+							} else if (textTransitioning === 'in') {
+								setTextTransitioning(() => null)
 							}
 						}}
 					>
@@ -101,6 +135,8 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({ chapterIndex,
 								setChapterIndex(() => 0)
 								setBackgroundColor(() => '#D695AB')
 								setButtonShadow(() => '1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
+							} else if (textTransitioning === 'in') {
+								setTextTransitioning(() => null)
 							}
 						}}
 					><h2>themes and ideas.</h2></span>
@@ -122,6 +158,8 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({ chapterIndex,
 								setChapterIndex(() => 1)
 								setBackgroundColor(() => '#D695C7')
 								setButtonShadow(() => '1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
+							} else if (textTransitioning === 'in') {
+								setTextTransitioning(() => null)
 							}
 						}}
 					><h2>Because a great story is worth remembering.</h2></span>
@@ -139,11 +177,13 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({ chapterIndex,
 								setChapterIndex(() => 2)
 								setBackgroundColor(() => '#9C95D6')
 								setButtonShadow(() => '1px 2px 7px #877DD8, -1px -2px 7px #BAB7D3')
+							} else if (textTransitioning === 'in') {
+								setTextTransitioning(() => null)
 							}
 						}}
 					><h2>Subscribe to Andy Mag for updates.</h2></span>
 				</span>
 			</div>
-		</div>
+		</animated.div>
 	)
 }
