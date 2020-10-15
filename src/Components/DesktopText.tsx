@@ -9,7 +9,7 @@ interface DesktopTextProps {
 	setBackgroundColor: React.Dispatch<React.SetStateAction<string>>
 	setButtonShadow: React.Dispatch<React.SetStateAction<string>>
 	// orbMovingState: "out-forward" | "out-backward" | "to-forward" | "to-backward" | "resting"
-	setOrbMovingState: React.Dispatch<React.SetStateAction<"out" | "to" | "resting" | "intersecting" | "in" | "subscribe">>
+	setOrbMovingState: React.Dispatch<React.SetStateAction<"out" | "to" | "resting" | "intersecting" | "in" | "subscribe" | "subscribe_hold" | "at_threshold">>
 	subscribeActive: boolean
 }
 
@@ -27,13 +27,25 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 
 	const textAnimation = useSpring({
 		opacity: subscribeActive ? 0 : 1,
-		zIndex: subscribeActive ? -1 : 0,
+		zIndex: subscribeActive ? -1 : 2,
 		config: {
 			mass: 1,
 			friction: 4,
 			clamp: true,
 		}
 	})
+
+	const reset = useCallback(() => {
+		// remove all out classes to out down
+		if (chapterRefs.current !== null) {
+			chapterRefs.current.forEach((chapter, index) => {
+				if (chapter.current !== null) {
+					chapter.current.classList.remove('out-up');
+					chapter.current.classList.add('out-down');
+				}
+			})
+		}
+	}, [])
 	
 	useEffect(() => {
 		const {
@@ -46,8 +58,13 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 	useEffect(() => {
 		if (subscribeActive) {
 			setBackgroundColor(() => '#231B1B')
+			setTimeout(reset, 1000);
+		} else {
+			if (chapterRefs.current !== null && chapterRefs.current[0].current !== null) {
+				if (chapterRefs.current[0].current.classList.contains('out-down')) chapterRefs.current[0].current.classList.remove('out-down') 
+			}
 		}
-	}, [subscribeActive, setBackgroundColor])
+	}, [subscribeActive, setBackgroundColor, reset])
 
 	useDidUpdate(() => {
 		if (chapterIndex !== null) {

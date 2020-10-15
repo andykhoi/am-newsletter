@@ -3,7 +3,7 @@ import React, { FunctionComponent, useRef, useMemo, useState, useEffect, useCall
 import * as THREE from 'three';
 import { useFrame, useThree } from 'react-three-fiber';
 import { a, useSpring } from 'react-spring/three';
-import { useDidUpdate } from '../hooks/useDidUpdate';
+// import { useDidUpdate } from '../hooks/useDidUpdate';
 import { Box3 } from 'three';
 import { DoubleSide } from 'three/';
 // import { Sphere } from './Sphere';
@@ -11,11 +11,18 @@ import { DoubleSide } from 'three/';
 interface OrbProps {
 	pointerPosition: [number | null, number | null]
 	chapterIndex: number
-	orbMovingState: "out" | "to" | "resting" | "intersecting" | "in" | "subscribe"
-	setOrbMovingState: React.Dispatch<React.SetStateAction<"out" | "resting" | "to" | "intersecting" | "in" | "subscribe">>
+	orbMovingState: "out" | "to" | "resting" | "intersecting" | "in" | "subscribe" | "subscribe_hold" | "at_threshold"
+	setOrbMovingState: React.Dispatch<React.SetStateAction<"out" | "resting" | "to" | "intersecting" | "in" | "subscribe" | "subscribe_hold" | "at_threshold">>
 	resetPointer: () => void
 	subscribeActive: boolean
 	setSubscribeActive: React.Dispatch<React.SetStateAction<boolean>>
+	setEmailActive: React.Dispatch<React.SetStateAction<boolean>>
+	setOrbHold: React.Dispatch<React.SetStateAction<boolean>>
+	orbHold: boolean
+	setScrollIndicatorHeight: React.Dispatch<React.SetStateAction<number>>
+	setChapterIndex: React.Dispatch<React.SetStateAction<number>>
+	setBackgroundColor: React.Dispatch<React.SetStateAction<string>>
+	setButtonShadow: React.Dispatch<React.SetStateAction<string>>
 }
 
 export const Orb: FunctionComponent<OrbProps> = ({
@@ -25,12 +32,20 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	resetPointer,
 	setOrbMovingState,
 	subscribeActive,
-	setSubscribeActive
+	setSubscribeActive,
+	setEmailActive,
+	setOrbHold,
+	orbHold,
+	setScrollIndicatorHeight,
+	setChapterIndex,
+	setBackgroundColor,
+	setButtonShadow
 }) => {
 	const { viewport } = useThree();
 	const orbRef = useRef<THREE.Points | null>(null)
 	const previousPosition = useRef<[number, number, number] | null>(null)
 	const closestSide = useRef<string | null>(null)
+	const subscribePosition = useRef<[number, number, number]>([viewport.width < 1280 ? -220 : -260, 0, 0]);
 
 	const orbMask = useRef<any>(null);
 	const orbMaskSphereBbox = useRef<THREE.Sphere>(new THREE.Sphere()) // position dependent on orbMask position
@@ -95,9 +110,31 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	]);
 
 	// this is causing bug: on viewport change position of orb is changing
+	// const orbPositions = useMemo<any>(() => {
+	// 	let radius = 200;
+	// 	if (viewport.width >= 1280) radius = 240
+	// 	return [
+	// 		{
+	// 			pre: [-viewport.width / 2 + 100, -viewport.height / 2 - radius, 0],
+	// 			start: [0,0,0]
+	// 		},
+	// 		{
+	// 			pre: [-viewport.width / 2 + 180, viewport.height / 2 + radius, 0],
+	// 			start: [-250,0,0]
+	// 		},
+	// 		{
+	// 			pre: [viewport.width / 2 + 180, -viewport.height / 2 - 180, 0],
+	// 			start: [50,0,0]
+	// 		},
+	// 		{
+	// 			pre: [viewport.width / 2 - 200, viewport.height / 2 + radius, 0],
+	// 			start: [100,0,0]
+	// 		},
+	// 	]
+	// }, [viewport])
 	const orbPositions = useMemo<any>(() => {
 		let radius = 200;
-		if (viewport.width >= 1000) radius = 240
+		if (viewport.width >= 1280) radius = 240
 		return [
 			{
 				pre: [-viewport.width / 2 + 100, -viewport.height / 2 - radius, 0],
@@ -116,7 +153,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 				start: [100,0,0]
 			},
 		]
-	}, [viewport])
+	}, [])
 
 	const orbPositionConfigs = useRef<any>({
 		resting: {
@@ -138,16 +175,19 @@ export const Orb: FunctionComponent<OrbProps> = ({
 			friction: 1400,
 			clamp: false
 		},
-		// subscribe: {
-		// 	mass: 400,
-		// 	friction: 0,
-		// 	clamp: true
-		// }
 		subscribe: {
-			// mass: 1000,
 			tension: 120,
-			// friction: 50,
 			clamp: true
+		},
+		subscribe_hold: {
+			mass: 70,
+			// friction: 50,
+			tension: 100,
+			clamp: true
+			// duration: 600
+		},
+		at_threshold: {
+			duration: 600
 		}
 	})
 
@@ -168,6 +208,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	const [orbScale, setOrbScale] = useState<[number, number, number] | null>(null)
 	const [orbPosition, setOrbPosition] = useState<[number,number,number] | null>(orbPositions[chapterIndex].pre)
 	const [isIntersecting, setIsIntersecting] = useState<boolean>(orbMovingState === 'intersecting' ? true : false);
+	const [orbOpacity, setOrbOpacity] = useState<number>(1);
 	
 	const vertices = useMemo(() => {
 		const computedVertices = [];
@@ -186,28 +227,66 @@ export const Orb: FunctionComponent<OrbProps> = ({
 		return computedVertices.map(v => new THREE.Vector3(...v));
 	}, [])
 
-	const isAtPrePosition = useCallback(() => {
+	const getOrbPosition = useCallback(() => {
 		if (orbRef.current !== null) {
-			if (orbMovingState === 'to') {
-				const currentPosition = [orbRef.current.position.x, orbRef.current.position.y, orbRef.current.position.z];
-				// console.log(currentPosition, orbPosition);
-				const setPosition = orbPosition;
-				const match = setPosition ? currentPosition.every((coord, index) => coord === setPosition[index]) : false;
-				// console.log(match)
-				return match
+			const currentPosition = [orbRef.current.position.x, orbRef.current.position.y, orbRef.current.position.z];
+			const setPosition = orbPosition;
+			let match;
+			if (orbMovingState === 'subscribe') {
+				match = setPosition ? currentPosition.every((coord, index) => {
+					// if the coord is within 5 units away in any direction return true for that direction
+					return Math.abs(coord - setPosition[index]) < 8
+				}) : false
+			} else {
+				match = setPosition ? currentPosition.every((coord, index) => coord === setPosition[index]) : false;
 			}
+			if (match) {
+				switch (orbMovingState) {
+					case 'to':
+						return 'pre'
+					case 'subscribe':
+						return 'subscribe'
+					case 'at_threshold':
+						return 'at_threshold'
+					default:
+						return false
+				}
+			}
+			return false
 		}
 		return false
 	}, [orbMovingState, orbPosition])
 
-	const orbAnimationProps = useSpring({
+	const { position, opacity, transparent } = useSpring({
 		position: orbPosition,
+		opacity: orbOpacity,
+		transparent: 0,
 		config: isIntersecting ? orbPositionConfigs.current.intersecting : orbPositionConfigs.current[orbMovingState],
-		onFrame: () => {
-			const match = isAtPrePosition();
-			if (match) {
+		onFrame: ({ opacity }: { opacity: number }) => {
+			const match = getOrbPosition();
+			if (match === 'pre') {
+				setSubscribeActive((prev) => {
+					if (prev === true) {
+						return false
+					}
+					return false
+				})
+				setScrollIndicatorHeight(() => 0)
 				setOrbMovingState(() => 'in');
 				setOrbPosition(() => orbPositions[chapterIndex].start);
+			} else if (match === 'subscribe') {
+				setEmailActive(() => true)
+			} else if (match === 'at_threshold') {
+				if (opacity === 0) {
+					// do not set subscribe back to active until orb is at pre position
+					setChapterIndex(() => 0)
+					setOrbMovingState(() => 'to')
+					setEmailActive(() => false)
+					setOrbHold(() => false)
+					setOrbPosition(() => orbPositions[0].pre)
+					setBackgroundColor(() => '#D695AB')
+					setButtonShadow(() => '1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
+				}
 			}
 		}
 	})
@@ -228,9 +307,9 @@ export const Orb: FunctionComponent<OrbProps> = ({
 
 	const updateOrbMaskSphereBboxRadius = useCallback(() => {
 		if (orbMaskSphereBbox.current !== null) {
-			if (viewport.width > 900 && viewport.width < 1000) {
+			if (viewport.width > 900 && viewport.width < 1280) {
 				orbMaskSphereBbox.current.radius = orbMask.current.geometry.boundingSphere.radius;
-			} else if (viewport.width >= 1000) {
+			} else if (viewport.width >= 1280) {
 				orbMaskSphereBbox.current.radius = orbMask.current.geometry.boundingSphere.radius + 40;
 			}
 		}
@@ -239,6 +318,21 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	const updateOrbMaskSphereBboxCenter = useCallback(() => {
 		if (orbMaskSphereBbox.current !== null) orbMaskSphereBbox.current.center = new THREE.Vector3(orbMask.current.position.x, orbMask.current.position.y, orbMask.current.position.z)
 	}, [])
+
+	// const atHoldThresholdAutomator = useCallback(() => {
+	// 	// set orb opacity to 0, return to first chapter slide,
+	// 	setBackgroundColor(() => '#D695AB')
+	// 	setButtonShadow(() => '1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
+	// 	setOrbOpacity(() => 0)
+	// 	setChapterIndex(() => 0)
+	// 	setSubscribeActive(() => false)
+	// 	setOrbMovingState(() => 'out')
+	// 	setEmailActive(() => false)
+	// }, [setChapterIndex, setBackgroundColor, setButtonShadow, setOrbOpacity, setSubscribeActive, setEmailActive, setOrbMovingState])
+	// const atHoldThresholdAutomator = useCallback(() => {
+	// 	// set orb opacity to 0, return to first chapter slide,
+	// 	setOrbMovingState(() => 'at_threshold');
+	// }, [setOrbMovingState])
 
 	const getClosestSide = useCallback((): string | null => {
 		if (orbRef.current !== null ) {
@@ -289,7 +383,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	const moveOut = useCallback(() => {
 		// using the closest side, translate out of view
 		let radius: number;
-		if (viewport.width > 900 && viewport.width < 1000) {
+		if (viewport.width > 900 && viewport.width < 1280) {
 			radius = 200;
 		} else {
 			radius = 240;
@@ -337,7 +431,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	}, [chapterIndex, setOrbMovingState, orbPositions])
 
 	useEffect(() => {
-		if (viewport.width > 900 && viewport.width < 1000) {
+		if (viewport.width > 900 && viewport.width < 1280) {
 			setOrbScale(() => [1,1,1])
 			updateOrbMaskSphereBboxRadius();
 		} else {
@@ -350,14 +444,41 @@ export const Orb: FunctionComponent<OrbProps> = ({
 		if (orbMovingState === 'out') {
 			moveOut();
 			resetPointer();
+		} else if (orbMovingState === 'at_threshold') {
+			setOrbOpacity(() => 0);
+		} else if (orbMovingState === 'to') {
+			setOrbOpacity((prev) => {
+				if (prev === 0) {
+					return 1
+				}
+				return prev
+			})
 		}
 	}, [orbMovingState, moveOut, resetPointer])
 
 	useEffect(() => {
 		if (subscribeActive) {
 			setOrbMovingState(() => 'subscribe')
+		} else {
+			setOrbOpacity(prev => {
+				if (prev === 0) {
+					return 1
+				}
+				return prev
+			})
 		}
 	}, [subscribeActive, setOrbMovingState])
+
+	useEffect(() => {
+		setOrbMovingState((prev) => {
+			if (prev === 'subscribe' && orbHold === true) {
+				return 'subscribe_hold'
+			} else if (prev === 'subscribe_hold' && orbHold === false) {
+				return 'subscribe'
+			}
+			return prev
+		})
+	}, [orbHold, setOrbMovingState])
  
 	useFrame(() => {
 		if (orbRef.current !== null) {
@@ -374,7 +495,25 @@ export const Orb: FunctionComponent<OrbProps> = ({
 				setIsIntersecting(() => false)
 				previousPosition.current = [orbRef.current.position.x, orbRef.current.position.y, orbRef.current.position.z]
 				if (orbMovingState === 'subscribe') {
-					setOrbPosition(() => [-200, 0, 0])
+					setOrbPosition(() => {
+						subscribePosition.current = [viewport.width < 1280 ? -220 : -260, 0, 0];
+						return [viewport.width < 1280 ? -220 : -260, 0, 0]
+					})
+					setScrollIndicatorHeight((prev) => {
+						if (orbRef.current !== null) {
+							if (subscribePosition.current[1] - orbRef.current.position.y < 1) {
+								const maxHeight = 47.2;
+								const x1 = subscribePosition.current[0];
+								const currentX = orbRef.current.position.x;
+								let percentage = 0
+								if (currentX !== null) {
+									percentage = Math.abs(x1 - currentX) / Math.abs(x1)
+								}
+								return percentage * maxHeight
+							}
+						}
+						return prev
+					})
 				} else if (orbMovingState === 'resting') {
 					setOrbPosition((prev) => {
 						if (orbMovingState === 'resting') {
@@ -390,6 +529,30 @@ export const Orb: FunctionComponent<OrbProps> = ({
 							}
 						return prev
 					})
+				} else if (orbMovingState === 'subscribe_hold') {
+					setOrbPosition(() => [0, 0, 0])
+					// get percentage of travel
+					setScrollIndicatorHeight((prev) => {
+						if (orbRef.current !== null) {
+							// percentage is 100 when origin is atleast 10 units away from origin
+							if (subscribePosition.current[1] - orbRef.current.position.y < 1) {
+								const maxHeight = 47.2;
+								const x1 = subscribePosition.current[0];
+								const currentX = orbRef.current.position.x;
+								let percentage = 0
+								if (currentX !== null) {
+									percentage = Math.abs(x1 - currentX) / Math.abs(x1)
+								}
+								// automator
+								if (percentage === 1) {
+									// atHoldThresholdAutomator();
+									setOrbMovingState(() => 'at_threshold');
+								}
+								return percentage * maxHeight
+							}
+						}
+						return prev
+					})
 				}
 			} else {
 				setIsIntersecting(() => true)
@@ -403,9 +566,17 @@ export const Orb: FunctionComponent<OrbProps> = ({
 			<group
 			>
 				<a.mesh
+					onPointerDown={() => setOrbHold((prev) => {
+						if (orbMovingState === 'subscribe' || orbMovingState === 'subscribe_hold') return true
+						return prev
+					})}
+					onPointerUp={() => setOrbHold((prev) => {
+						if (orbMovingState === 'subscribe' || orbMovingState === 'subscribe_hold') return false
+						return prev
+					})}
 					ref={orbMask}
 					scale={orbScale}
-					position={orbAnimationProps.position}
+					position={position}
 				>
 					<sphereBufferGeometry
 						attach='geometry'
@@ -420,18 +591,23 @@ export const Orb: FunctionComponent<OrbProps> = ({
 					/>
 				</a.mesh>
 				<a.points
+					onPointerDown={() => setOrbHold(() => true)}
+					onPointerUp={() => setOrbHold(() => false)}
 					ref={orbRef}
 					scale={orbScale}
-					position={orbAnimationProps.position}
+					position={position}
+					// opacity={orbAnimationProps.opacity}
 				>	
 					<geometry
 						attach='geometry'
 						vertices={vertices}
 					/>
-					<pointsMaterial
+					<a.pointsMaterial
 						attach='material'
 						color={new THREE.Color(0xCC37CC)}
 						size={2.5}
+						transparent={transparent}
+						opacity={opacity}
 					/>
 				</a.points>
 			</group>

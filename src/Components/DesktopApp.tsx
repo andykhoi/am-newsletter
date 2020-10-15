@@ -14,6 +14,7 @@ import { Canvas } from 'react-three-fiber';
 import { DesktopText } from './DesktopText';
 // import { DesktopOrb } from './DesktopOrb';
 import { Orb } from './DesktopOrb3';
+// import { DesktopInstructions } from './DesktopInstructions'
 import { Email } from './DesktopEmailForm';
 
 interface OrbState {
@@ -25,22 +26,31 @@ export const DesktopApp: FunctionComponent = () => {
 	let [chapterIndex, setChapterIndex] = useState<number>(0);
 	let [backgroundColor, setBackgroundColor] = useState<string>('#D695AB')
 	let [subscribeActive, setSubscribeActive] = useState<boolean>(false);
+	let [emailActive, setEmailActive] = useState<boolean>(false);
 	let [buttonShadow, setButtonShadow] = useState<string>('1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
-	const scrollIndicatorPositions = useRef<number[]>([0, 9, 18, 27]);
+	const scrollIndicatorPositions = useRef<number[]>([0, 10, 19, 28.2]);
 	let [scrollIndicatorPosition, setScrollIndicatorPosition] = useState<number>(scrollIndicatorPositions.current[0])
+	let [scrollIndicatorHeight, setScrollIndicatorHeight] = useState<number>(0);
 	let [canvasViewport, setCanvasViewport] = useState<{width: number, height: number, factor: number} | null>(null)
-	let [orbMovingState, setOrbMovingState] = useState<'out' | 'resting' | 'to' | 'intersecting' | 'in' | 'subscribe'>('in')
+	let [orbMovingState, setOrbMovingState] = useState<'out' | 'resting' | 'to' | 'intersecting' | 'in' | 'subscribe' | 'subscribe_hold' | 'at_threshold'>('resting')
+	let [orbHold, setOrbHold] = useState<boolean>(false);
 	let [pointerPosition, setPointerPosition] = useState<[number | null, number | null]>([null, null])
-
+	// console.log(scrollIndicatorHeight);
 	let wheelThreshold = useRef<number>(40);
 	let containerRef = useRef<HTMLDivElement>(null);
 
 	const scrollIndicatorAnimate = useSpring({
-		top: scrollIndicatorPosition,
-		opacity: chapterIndex === null ? '0' : '1',
+		// top: subscribeActive ? 'auto' : scrollIndicatorPosition,
+		top: !subscribeActive ? scrollIndicatorPosition : 'auto',
+		bottom: subscribeActive ? 1 : 'auto',
+		height: subscribeActive ? scrollIndicatorHeight : 19,
 		config: { clamp: true },
 		backgroundColor: !subscribeActive ? 'black' : 'white',
 	})
+
+	// const instructionsProps = useSpring({
+	// 	opacity: orbHold ? 0 : 1
+	// })
 
 	useEffect(() => {
 		setScrollIndicatorPosition(() => scrollIndicatorPositions.current[chapterIndex])
@@ -91,7 +101,7 @@ export const DesktopApp: FunctionComponent = () => {
 					far: -300
 				}}
 			>	
-				<Orb pointerPosition={pointerPosition} chapterIndex={chapterIndex} orbMovingState={orbMovingState} resetPointer={resetPointer} setOrbMovingState={setOrbMovingState} subscribeActive={subscribeActive} setSubscribeActive={setSubscribeActive} />
+				<Orb setBackgroundColor={setBackgroundColor} setButtonShadow={setButtonShadow} setChapterIndex={setChapterIndex} setScrollIndicatorHeight={setScrollIndicatorHeight} orbHold={orbHold} setOrbHold={setOrbHold} setEmailActive={setEmailActive} pointerPosition={pointerPosition} chapterIndex={chapterIndex} orbMovingState={orbMovingState} resetPointer={resetPointer} setOrbMovingState={setOrbMovingState} subscribeActive={subscribeActive} setSubscribeActive={setSubscribeActive} />
 			</Canvas>
 			<div className="logo" onClick={() => setChapterIndex(() => 0)}>
 				{ !subscribeActive ? <img src='../assets/logo.svg' alt='Logo' /> : <img src='../assets/logo_white.svg' alt='Logo' />}
@@ -108,7 +118,13 @@ export const DesktopApp: FunctionComponent = () => {
 					SUBSCRIBE
 				</button>
 			</animated.div>
-			{/* <Email /> */}
+			<div className="SocialMedia">
+				<a target="_blank" rel="noopener noreferrer" href="https://www.snapchat.com/add/theandymag"><img src="../assets/snapchat.svg" alt="Snapchat" /></a>			
+				<a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/theandymag/"><img src="../assets/instagram.svg" alt="Instagram" /></a>			
+				<a target="_blank" rel="noopener noreferrer" href="https://twitter.com/theandymag_"><img src="../assets/twitter.svg" alt="Twitter" /></a>
+			</div>
+			{/* <DesktopInstructions /> */}
+			<Email orbHold={orbHold} emailActive={emailActive} />
 		</div>
 	)
 }
