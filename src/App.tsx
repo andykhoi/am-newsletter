@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 
 import './styles/base.sass'
 import { MobileApp } from './Components/MobileApp'
+import { DesktopApp } from './Components/DesktopApp'
 
 function App() {
 	
@@ -18,7 +19,7 @@ function App() {
 	return (
 		<div className="App">
 			{
-				isMobile && <MobileApp />
+				isMobile ? <MobileApp /> : <DesktopApp />
 			}
 		</div>
 	);

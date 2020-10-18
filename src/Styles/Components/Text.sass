@@ -1,0 +1,28 @@
+.Text
+	width: 100%
+	height: 100%
+	z-index: 2
+	// align-items: center
+	.chapter
+		// grid-column: 1 / -1
+		grid-area: 1 / 1 / -1 / -1
+		display: flex
+		flex-direction: column
+		justify-content: center
+		&.out-down
+			// z-index: -1
+			span span
+				transform: translateY(100%)
+		&.out-up
+			// z-index: -1
+			span span
+				transform: translateY(-100%)
+		span
+			color: white
+			display: block
+			text-align: center
+			font-family: Overpass
+			overflow: hidden
+			span
+				transition: transform 0.6s cubic-bezier(.5,0,0,1),-webkit-transform 1s cubic-bezier(.5,0,0,1)
+				

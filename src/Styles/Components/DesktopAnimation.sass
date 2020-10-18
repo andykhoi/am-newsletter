@@ -1,0 +1,49 @@
+.DesktopAnimation
+	height: 100%
+	width: 100%
+	display: flex
+	justify-content: center
+	align-items: center
+	// flex-direction: column
+	transition: background-color 400ms linear
+	.logo
+		img
+			display: block
+		.scroll-indicator
+			position: absolute
+			width: 3px
+			// height: 19px
+			left: 47px
+	.div1
+		position: relative
+		overflow: hidden
+		width: 200px
+		height: 150px
+	.SubscribeButton
+		z-index: 2
+		position: absolute
+		bottom: 7rem
+		button
+			cursor: pointer
+			width: 276px
+			border-radius: 10px
+			color: white
+			letter-spacing: 1px
+			font-family: Aileron
+			height: 47px
+			-webkit-appearance: none
+			background-color: transparent
+			transition: box-shadow 400ms linear
+			// box-shadow: 1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3
+			border: none
+			&:focus
+				outline: none
+	.SocialMedia
+		position: absolute
+		bottom: 3.5rem
+		display: flex
+		width: 160px
+		justify-content: space-between
+		z-index: 2
+		img
+			width: 21px
