@@ -1,8 +1,15 @@
-import React, { FunctionComponent, useRef, useCallback, useMemo } from 'react';
+import React, {
+	FunctionComponent,
+	useRef,
+	useCallback,
+	useMemo,
+	useEffect,
+	useState,
+} from 'react';
 import * as THREE from 'three/';
-import { useFrame } from 'react-three-fiber';
+import { useFrame, useThree } from 'react-three-fiber';
 import { useSpring, a } from 'react-spring/three'
-import { DoubleSide } from 'three/';
+import { DoubleSide, PointsMaterial } from 'three/';
 
 interface SphereProps {
 	radius: number,
@@ -23,15 +30,43 @@ interface SphereProps {
 	breakPoint: number,
 }
 
-export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, sphereState, setSphereState, setGradientActive, breakPoint, endPosition, setEmailVisible, setInstructionsVisible }) => {
-	const sphereRef = useRef<THREE.Points | null>(null);
+export const Sphere: FunctionComponent<SphereProps> = ({
+	radius,
+	// startPosition,
+	sphereState,
+	setSphereState,
+	setGradientActive,
+	breakPoint,
+	endPosition,
+	setEmailVisible,
+	setInstructionsVisible
+}) => {
+	/* 
+		TODO: 
+			-add responsive scaling for smaller and larger mobile viewports
+			-responsive endpositions depending on viewport height
+
+			-swtich between ortho and perspective for initial animation
+	*/ 
+	const sphereRef = useRef<any>(null);
+	const {
+		camera: {
+			fov
+		},
+		viewport
+	}: { camera: any, viewport: any } = useThree();
+	// const { viewport } = useThree();
+	const defaultPointSize = useRef<number>(1.7);
+	const startPosition: [number, number, number] = [0, viewport.height / 2 - 80, 0];
 	const hemisphereRef = useRef<THREE.Points | null>(null);
+	// const currentPosition = useRef<[number, number, number]>(startPosition);
 	const currentPosition = useRef<[number, number, number]>(startPosition);
 	const sphereAnimationProps = useSpring({
 		config: { mass: 1.8, tension: 84, friction: 22, clamp: true },
 		pointsPosition: !sphereState.hold ? startPosition : endPosition,
 		circlePosition: !sphereState.hold ? startPosition : endPosition,
 		onFrame: (arg: any) => {
+			// console.log(sphereRef.current.position);
 			currentPosition.current = arg.pointsPosition
 			if (currentPosition.current[2] > 0 && currentPosition.current[2] < 50) {
 				if (sphereState.direction === 'backwards') {
@@ -46,6 +81,9 @@ export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, 
 		onRest: (arg: any) => { 
 			if (currentPosition.current.length === endPosition.length && currentPosition.current.every((position: number, index: number) => position === endPosition[index])) {
 				setGradientActive(() => true);
+			} else if (currentPosition.current.length === startPosition.length && currentPosition.current.every((position: number, index: number) => position === startPosition[index])) {
+				// setInstructionsVisible(() => true);
+				// setEmailVisible(() => true)
 			}
 		}
 	})
@@ -86,6 +124,12 @@ export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, 
 		}
 		return computedVertices.map(v => new THREE.Vector3(...v));
 	}, [radius])
+
+	useEffect(() => {
+		if (sphereRef.current) {
+			sphereRef.current.material.size = defaultPointSize.current / Math.tan( ( Math.PI / 180 ) * fov / 2 )
+		}
+	}, [fov])
 	
 	return (
 		<group>
@@ -109,6 +153,7 @@ export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, 
 				ref={sphereRef}
 				// ref={sphereRef}
 				position={sphereAnimationProps.pointsPosition}
+				// scale={[1,1,1]}
 			>	
 				<geometry
 					attach='geometry'
@@ -117,9 +162,7 @@ export const Sphere: FunctionComponent<SphereProps> = ({ radius, startPosition, 
 				<pointsMaterial
 					attach='material'
 					color={new THREE.Color(0xCC37CC)}
-					// sizeAttenuation={false}
-					// map={sprite}
-					size={2}
+					size={1.7}
 				/>
 			</a.points>
 		</group>

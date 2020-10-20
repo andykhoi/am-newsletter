@@ -1,20 +1,51 @@
-import React, { FunctionComponent, useState, useMemo } from 'react';
-import { Canvas } from 'react-three-fiber';
+import React, {
+	FunctionComponent,
+	useState,
+	useMemo,
+	useRef,
+	useEffect
+} from 'react';
+import { Canvas, useThree } from 'react-three-fiber';
 
 import { Sphere } from './Sphere';
 // import { GradientShow } from './GradientShow';
 import { GradientShow2 } from './GradientShow2';
 import { MobileEmailForm } from './MobileEmailForm';
 import { useSpring, animated } from 'react-spring';
-// import { useSpring as useSpringThree, a as aThree } from 'react-spring/three'
+import { PerspectiveCamera } from 'three';
+
+const Camera = () => {
+	const camera = useRef<PerspectiveCamera | null>(null)
+	const { aspect, size, setDefaultCamera, viewport } = useThree()
+	const pixelToThreeUnitRatio = 1
+	const planeDistance = 0
+	const cameraDistance = 500
+	const distance = cameraDistance - planeDistance
+	const height = size.height / pixelToThreeUnitRatio
+	const halfFovRadians = Math.atan((height / 2) / distance)
+	const fov = 2 * halfFovRadians * (180/Math.PI)
+	useEffect(() => {
+		if (camera.current) void setDefaultCamera(camera.current)
+	}, [setDefaultCamera])
+
+	return <perspectiveCamera
+	  ref={camera}
+	  aspect={aspect}
+	  fov={fov}
+	  position={[0, viewport.height / 2 - 200, cameraDistance]}
+	  onUpdate={self => self.updateProjectionMatrix()}
+	/>
+  }
 
 export const MobileAnimation: FunctionComponent = () => {
 	const [darkMode, setDarkMode] = useState<Boolean>(false);
 	const [gradientActive, setGradientActive] = useState<Boolean>(false);
 	const [chapterIndex, setChapterIndex ] = useState<number | null>(0);
 	const [sphereState, setSphereState] = useState<{ hold: Boolean, direction: null | 'forwards' | 'backwards' }>({ hold: false, direction: null});
-	const [emailVisible, setEmailVisible] = useState<Boolean>(true);
-	const [instructionsVisible, setInstructionsVisible ] = useState<boolean>(true);
+	const [emailVisible, setEmailVisible] = useState<Boolean>(false);
+	const [instructionsVisible, setInstructionsVisible ] = useState<boolean>(false);
+	// const { camera } = useThree();
+	// console.log(camera);
 	const gradientConfig = useMemo<any>(() => {
 		let config;
 		if (!darkMode) {
@@ -91,15 +122,16 @@ export const MobileAnimation: FunctionComponent = () => {
 			<Canvas
 				style={{ backgroundColor: darkMode ? '#000000' : 'transparent' }}
 				className="Canvas"
-				camera={{position: [0, 0, 500]}}
+				// camera={{position: [0, 0, 500]}}
 			>
+				<Camera />
 				<Sphere
 					radius={135}
 					setInstructionsVisible={setInstructionsVisible}
 					setEmailVisible={setEmailVisible}
 					startPosition={[0, 135, 0]}
 					sphereState={sphereState}
-					endPosition={[0, -120, 646]}
+					endPosition={[0, 60, 646]}
 					setSphereState={setSphereState}
 					setGradientActive={setGradientActive}
 					breakPoint={468}
