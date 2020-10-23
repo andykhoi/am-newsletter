@@ -6,6 +6,7 @@ import React, {
 	useEffect
 } from 'react';
 import { Canvas, useThree } from 'react-three-fiber';
+// import * as THREE from 'three/'
 
 import { Sphere } from './Sphere';
 // import { GradientShow } from './GradientShow';
@@ -16,7 +17,7 @@ import { PerspectiveCamera } from 'three';
 
 const Camera = () => {
 	const camera = useRef<PerspectiveCamera | null>(null)
-	const { aspect, size, setDefaultCamera, viewport } = useThree()
+	const { aspect, size, setDefaultCamera } = useThree()
 	const pixelToThreeUnitRatio = 1
 	const planeDistance = 0
 	const cameraDistance = 500
@@ -29,11 +30,12 @@ const Camera = () => {
 	}, [setDefaultCamera])
 
 	return <perspectiveCamera
-	  ref={camera}
-	  aspect={aspect}
-	  fov={fov}
-	  position={[0, viewport.height / 2 - 200, cameraDistance]}
-	  onUpdate={self => self.updateProjectionMatrix()}
+		ref={camera}
+		aspect={aspect}
+		fov={fov}
+		//   position={[0, viewport.height / 2 - 200, cameraDistance]}
+		position={[0, 0, cameraDistance]}
+		onUpdate={self => self.updateProjectionMatrix()}
 	/>
   }
 
@@ -41,7 +43,11 @@ export const MobileAnimation: FunctionComponent = () => {
 	const [darkMode, setDarkMode] = useState<Boolean>(false);
 	const [gradientActive, setGradientActive] = useState<Boolean>(false);
 	const [chapterIndex, setChapterIndex ] = useState<number | null>(0);
-	const [sphereState, setSphereState] = useState<{ hold: Boolean, direction: null | 'forwards' | 'backwards' }>({ hold: false, direction: null});
+	const [sphereState, setSphereState] = useState<{
+		hold: boolean,
+		direction: null | 'forwards' | 'backwards',
+		mountAnimating: boolean
+	}>({ hold: false, direction: 'backwards', mountAnimating: true});
 	const [emailVisible, setEmailVisible] = useState<Boolean>(false);
 	const [instructionsVisible, setInstructionsVisible ] = useState<boolean>(false);
 	// const { camera } = useThree();
@@ -112,6 +118,10 @@ export const MobileAnimation: FunctionComponent = () => {
 		config: { duration: 130 }
 	})
 
+	useEffect(() => {
+		// setSphereState(() => ({ hold: false, direction: "backwards"}));
+	}, [])
+
 	return (
 		<div className="MobileAnimation">
 			<div className="logo" onClick={() => {
@@ -129,9 +139,9 @@ export const MobileAnimation: FunctionComponent = () => {
 					radius={135}
 					setInstructionsVisible={setInstructionsVisible}
 					setEmailVisible={setEmailVisible}
-					startPosition={[0, 135, 0]}
+					inPosition={[0, 135, 0]}
 					sphereState={sphereState}
-					endPosition={[0, 60, 646]}
+					outPosition={[0, 60, 646]}
 					setSphereState={setSphereState}
 					setGradientActive={setGradientActive}
 					breakPoint={468}

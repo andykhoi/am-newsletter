@@ -16,8 +16,9 @@ interface GradientShowProps {
 	setChapterIndex: React.Dispatch<React.SetStateAction<number | null>>,
 	setGradientActive: React.Dispatch<React.SetStateAction<Boolean>>,
 	setSphereState: React.Dispatch<React.SetStateAction<{
-		hold: Boolean;
+		hold: boolean;
 		direction: null | 'forwards' | 'backwards';
+		mountAnimating: boolean;
 	}>>
 	children: React.ReactNode
 }
@@ -85,6 +86,7 @@ export const GradientShow2: FunctionComponent<GradientShowProps> = ({ gradientAc
 				setSphereState(() => ({
 					hold: false,
 					direction: 'backwards',
+					mountAnimating: false
 				}))
 				setTimeout(() => setChapterIndex(() => 0), 500);
 			}

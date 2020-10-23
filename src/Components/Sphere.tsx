@@ -9,7 +9,7 @@ import React, {
 import * as THREE from 'three/';
 import { useFrame, useThree } from 'react-three-fiber';
 import { useSpring, a } from 'react-spring/three'
-import { DoubleSide, PointsMaterial } from 'three/';
+import { DoubleSide } from 'three/';
 
 interface SphereProps {
 	radius: number,
@@ -18,75 +18,56 @@ interface SphereProps {
 	sphereAnimationProps?: any,
 	setGradientActive: React.Dispatch<React.SetStateAction<Boolean>>,
 	setSphereState: React.Dispatch<React.SetStateAction<{
-		hold: Boolean;
+		hold: boolean;
 		direction: null | 'forwards' | 'backwards';
+		mountAnimating: boolean;
 	}>>
 	sphereState: {
-		hold: Boolean,
+		hold: boolean,
 		direction: null | 'forwards' | 'backwards',
+		mountAnimating: boolean
 	},
-	startPosition: [number, number, number],
-	endPosition: [number, number, number],
+	inPosition: [number, number, number],
+	outPosition: [number, number, number],
 	breakPoint: number,
 }
 
 export const Sphere: FunctionComponent<SphereProps> = ({
 	radius,
-	// startPosition,
+	// inPosition,
 	sphereState,
 	setSphereState,
 	setGradientActive,
 	breakPoint,
-	endPosition,
+	// outPosition,
 	setEmailVisible,
 	setInstructionsVisible
 }) => {
 	/* 
 		TODO: 
 			-add responsive scaling for smaller and larger mobile viewports
-			-responsive endpositions depending on viewport height
+			-responsive outPositions depending on viewport height
 
-			-swtich between ortho and perspective for initial animation
+			-initial animation of ease into view:
+				- start position 
+				- opacity fade in
+				- orbLive ? --> fade and ease in to start position, 
 	*/ 
 	const sphereRef = useRef<any>(null);
 	const {
+		camera,
 		camera: {
 			fov
 		},
-		viewport
-	}: { camera: any, viewport: any } = useThree();
-	// const { viewport } = useThree();
+		// viewport,
+		size,
+	}: { camera: any, viewport: any, size: any } = useThree();
+
 	const defaultPointSize = useRef<number>(1.7);
-	const startPosition: [number, number, number] = [0, viewport.height / 2 - 80, 0];
+	const inPosition: [number, number, number] = [0, 0, 0];
+	const outPosition: [number, number, number] = [0, -size.height / 9, 626];
 	const hemisphereRef = useRef<THREE.Points | null>(null);
-	// const currentPosition = useRef<[number, number, number]>(startPosition);
-	const currentPosition = useRef<[number, number, number]>(startPosition);
-	const sphereAnimationProps = useSpring({
-		config: { mass: 1.8, tension: 84, friction: 22, clamp: true },
-		pointsPosition: !sphereState.hold ? startPosition : endPosition,
-		circlePosition: !sphereState.hold ? startPosition : endPosition,
-		onFrame: (arg: any) => {
-			// console.log(sphereRef.current.position);
-			currentPosition.current = arg.pointsPosition
-			if (currentPosition.current[2] > 0 && currentPosition.current[2] < 50) {
-				if (sphereState.direction === 'backwards') {
-					setEmailVisible(() => true)
-					setInstructionsVisible(() => true)
-				} else {
-					setEmailVisible(() => false);
-					setInstructionsVisible(() => false)
-				}
-			}
-		},
-		onRest: (arg: any) => { 
-			if (currentPosition.current.length === endPosition.length && currentPosition.current.every((position: number, index: number) => position === endPosition[index])) {
-				setGradientActive(() => true);
-			} else if (currentPosition.current.length === startPosition.length && currentPosition.current.every((position: number, index: number) => position === startPosition[index])) {
-				// setInstructionsVisible(() => true);
-				// setEmailVisible(() => true)
-			}
-		}
-	})
+
 
 	useFrame(() => {
 		if (sphereRef.current) {
@@ -94,19 +75,39 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		}
 	});
 
-	const pointerUpHandler = useCallback(() => {
-		if (currentPosition.current[2] >= breakPoint) {
-			setSphereState({
-				hold: true,
-				direction: 'forwards',
-			});
+	const setPosition = useCallback(() => {
+		if (sphereState.mountAnimating) {
+			return outPosition
 		} else {
-			setSphereState({
-				hold: false,
-				direction: 'backwards',
-			});
+			if (sphereState.hold) {
+				return outPosition
+			} else {
+				return inPosition
+			}
 		}
-	}, [setSphereState, breakPoint])
+	}, [inPosition, sphereState, outPosition])
+
+	const pointerUpHandler = useCallback(() => {
+		if (sphereRef.current.position.z >= breakPoint) {
+			setSphereState(prev => {
+				const updated: typeof sphereState = {
+					hold: true,
+					direction: "forwards",
+					mountAnimating: prev.mountAnimating
+				}
+				return updated
+			})
+		} else {
+			setSphereState(prev => {
+				const updated: typeof sphereState = {
+					hold: false,
+					direction: "backwards",
+					mountAnimating: prev.mountAnimating
+				}
+				return updated
+			})
+		}
+	}, [setSphereState, breakPoint, sphereState])
 	
 	const vertices = useMemo(() => {
 		const computedVertices = [];
@@ -125,20 +126,77 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		return computedVertices.map(v => new THREE.Vector3(...v));
 	}, [radius])
 
+	const sphereAnimationProps = useSpring({
+		config: { mass: 1.8, tension: 84, friction: 22, clamp: true },
+		pointsPosition: setPosition(),
+		opacity: sphereState.mountAnimating ? 0 : 1,
+		onFrame: (arg: any) => {
+			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 50) {
+				if (sphereState.direction === 'backwards') {
+					setEmailVisible(() => true)
+					setInstructionsVisible(() => true)
+				} else {
+					setEmailVisible(() => false);
+					setInstructionsVisible(() => false)
+				}
+			}
+		},
+		onRest: (arg: any) => { 
+			if (outPosition.every((position: number, index: number) => {
+				if (!sphereState.mountAnimating) {
+					if (index === 0) {
+						return sphereRef.current.position.x === position
+					} else if (index === 1) {
+						return sphereRef.current.position.y === position
+					} else if (index === 2) {
+						return sphereRef.current.position.z === position
+					}
+				}
+				return false
+			})) {
+				setGradientActive(() => true);
+			}
+		}
+	})
+
 	useEffect(() => {
 		if (sphereRef.current) {
 			sphereRef.current.material.size = defaultPointSize.current / Math.tan( ( Math.PI / 180 ) * fov / 2 )
 		}
 	}, [fov])
+
+	useEffect(() => {
+		if (size.height && camera) {
+			camera.lookAt(0, (-size.height / 5), 0);
+		}
+	}, [size, camera])
+
+	useEffect(() => {
+		setSphereState(prev => {
+			if (prev.mountAnimating) {
+				return {
+					...prev,
+					mountAnimating: false
+				}
+			} else {
+				return prev
+			}
+		})
+	}, [setSphereState])
+
 	
 	return (
 		<group>
 			<a.mesh
 				rotation={[-Math.PI / 2, 0, 0]}
 				ref={hemisphereRef}
-				onPointerDown={() => setSphereState({
-					hold: true,
-					direction: 'forwards',
+				onPointerDown={() => setSphereState(prev => {
+					const updated: typeof sphereState = {
+						hold: true,
+						direction: "forwards",
+						mountAnimating: prev.mountAnimating
+					}
+					return updated
 				})}
 				onPointerUp={() => pointerUpHandler()}
 				position={sphereAnimationProps.circlePosition}
@@ -159,10 +217,11 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 					attach='geometry'
 					vertices={vertices}
 				/>
-				<pointsMaterial
+				<a.pointsMaterial
 					attach='material'
 					color={new THREE.Color(0xCC37CC)}
 					size={1.7}
+					opacity={sphereAnimationProps.opacity}
 				/>
 			</a.points>
 		</group>
