@@ -47,7 +47,7 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	const submitButtonProps = useSpring({
 		background: darkMode ? '#754AAD' : '#EE84FF',
 		// boxShadow: darkMode ? 'inset 0px 0px 1px 0px #FFFFFF' : 'inset 0px 0px 2px 1px #FFFFFF',
-		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '15px 8px 32px rgba(176, 195, 210, .8)',
+		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '8px 8px 24px rgba(176, 195, 210, .8)',
 		color: darkMode ? '#FFFFFF' : '#2E476E',
 		immediate: key => key === 'boxShadow'
 	})
