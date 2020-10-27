@@ -45,7 +45,10 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	})
 
 	const submitButtonProps = useSpring({
-		boxShadow: darkMode ? 'inset 0px 0px 1px 0px #FFFFFF' : 'inset 0px 0px 2px 1px #FFFFFF',
+		background: darkMode ? '#754AAD' : '#EE84FF',
+		// boxShadow: darkMode ? 'inset 0px 0px 1px 0px #FFFFFF' : 'inset 0px 0px 2px 1px #FFFFFF',
+		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '15px 8px 32px rgba(176, 195, 210, .8)',
+		color: darkMode ? '#FFFFFF' : '#2E476E',
 		immediate: key => key === 'boxShadow'
 	})
 
@@ -53,7 +56,7 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 		// if null do nothing, if false show fail, if true show success
 		<form onSubmit={submitHandler} className={success ? 'Email success' : (success === 'false' ? 'Email fail' : 'Email')}>
 			<animated.input className={darkMode ? 'darkmode' : ''} style={emailInputProps} type="email" value={email} placeholder='email' onChange={(e:any) => setEmail(e.currentTarget.value)} required />
-			<animated.input style={submitButtonProps} type="submit" value="SUBSCRIBE"/>
+			<animated.input style={submitButtonProps} type="submit" value="Subscribe"/>
 		</form>
 	)
 }

@@ -1,16 +1,15 @@
 import React, {
 	FunctionComponent,
 	useState,
-	useMemo,
+	// useMemo,
 	useRef,
 	useEffect
 } from 'react';
 import { Canvas, useThree } from 'react-three-fiber';
 // import * as THREE from 'three/'
 
-import { Sphere } from './Sphere';
-// import { GradientShow } from './GradientShow';
-import { GradientShow2 } from './GradientShow2';
+import { Sphere } from './Sphere2';
+import { ColorShow } from './ColorShow';
 import { MobileEmailForm } from './MobileEmailForm';
 import { useSpring, animated } from 'react-spring';
 import { PerspectiveCamera } from 'three';
@@ -40,9 +39,10 @@ const Camera = () => {
   }
 
 export const MobileAnimation: FunctionComponent = () => {
-	const [darkMode, setDarkMode] = useState<Boolean>(true);
-	const [gradientActive, setGradientActive] = useState<Boolean>(false);
-	const [chapterIndex, setChapterIndex ] = useState<number | null>(0);
+	const scrollIndicatorPositions = useRef<number[]>([-1, 10, 22, 31.5]);
+	const [darkMode, setDarkMode] = useState<Boolean>(false);
+	const [chapterIndex, setChapterIndex ] = useState<number>(0);
+	const [colorShowActive, setColorShowActive] = useState<boolean>(false);
 	const [sphereState, setSphereState] = useState<{
 		hold: boolean,
 		direction: null | 'forwards' | 'backwards',
@@ -50,63 +50,7 @@ export const MobileAnimation: FunctionComponent = () => {
 	}>({ hold: false, direction: 'backwards', mountAnimating: true});
 	const [emailVisible, setEmailVisible] = useState<Boolean>(false);
 	const [instructionsVisible, setInstructionsVisible ] = useState<boolean>(false);
-	// const { camera } = useThree();
-	// console.log(camera);
-	const gradientConfig = useMemo<any>(() => {
-		let config;
-		if (!darkMode) {
-			config = [{
-				lightIntensity: 2,
-				textColor: '#972C95',
-				planeColor: '#FFFFFF',
-				lightColor: '#FFFFFF',
-			},
-			{
-				lightIntensity: 1.3,
-				textColor: '#FFFFFF',
-				planeColor: '#FFFFFF',
-				lightColor: '#e75a81',
-			},
-			{
-				lightIntensity: 1.45,
-				textColor: '#e75a81',
-				planeColor: '#FFFFFF',
-				lightColor: '#EAEAEA'
-			},
-			{
-				lightIntensity: 1,
-				textColor: '#C9C9C9',
-				planeColor: '#FFFFFF',
-				lightColor: '#000000',
-			}]
-		} else {
-			config = [{
-				lightIntensity: 0,
-				textColor: '#972C95',
-				planeColor: '#000000',
-				lightColor: '#000000',
-			},
-			{
-				lightIntensity: 1.45,
-				textColor: '#000000',
-				planeColor: '#FFFFFF',
-				lightColor: '#EAEAEA',
-			},
-			{
-				lightIntensity: 1.3,
-				textColor: '#C9C9C9',
-				planeColor: '#FFFFFF',
-				lightColor: '#e75a81'
-			},
-			{
-				lightIntensity: 2,
-				textColor: '#e75a81',
-				planeColor: '#FFFFFF',
-				lightColor: '#FFFFFF',
-			}]
-		}
-		return config
-	}, [darkMode])
+	let [scrollIndicatorPosition, setScrollIndicatorPosition] = useState<number>(scrollIndicatorPositions.current[0])
 
 	const instructionsDivProps = useSpring({
 		opacity: instructionsVisible ? 1 : 0,
@@ -118,21 +62,29 @@ export const MobileAnimation: FunctionComponent = () => {
 		config: { duration: 130 }
 	})
 
+	const scrollIndicatorAnimate = useSpring({
+		backgroundColor: darkMode ? '#FFFFFF' : '#000000',
+		top: scrollIndicatorPosition,
+		opacity: colorShowActive ? '1' : '0',
+		config: { clamp: true }
+		// config: { mass: 1, friction: 1, tension: 100, clamp: true }
+	})
+
 	useEffect(() => {
-		// setSphereState(() => ({ hold: false, direction: "backwards"}));
-	}, [])
+		setScrollIndicatorPosition(() => scrollIndicatorPositions.current[chapterIndex])
+	}, [chapterIndex])
 
 	return (
 		<div className="MobileAnimation">
 			<div className="logo" onClick={() => {
-				if (gradientActive) setChapterIndex(() => null);
+				setColorShowActive(() => false)
 			}}>
 				{ !darkMode ? <img src='../assets/logo.svg' alt='Logo' /> : <img src='../assets/logo_white.svg' alt='Logo' /> }
+				<animated.div className="scroll-indicator" style={scrollIndicatorAnimate} />
 			</div>
 			<Canvas
 				style={{ backgroundColor: darkMode ? '#26282C' : '#F9FAFC' }}
 				className="Canvas"
-				// camera={{position: [0, 0, 500]}}
 			>
 				<Camera />
 				<Sphere
@@ -143,35 +95,11 @@ export const MobileAnimation: FunctionComponent = () => {
 					sphereState={sphereState}
 					outPosition={[0, 60, 646]}
 					setSphereState={setSphereState}
-					setGradientActive={setGradientActive}
 					breakPoint={468}
+					setColorShowActive={setColorShowActive}
 				/>
 			</Canvas>
-			<GradientShow2
-				darkMode={darkMode}
-				chapterIndex={chapterIndex}
-				setChapterIndex={setChapterIndex}
-				gradientActive={gradientActive}
-				swipeThreshold={150}
-				chapterConfigs={gradientConfig}
-				setGradientActive={setGradientActive}
-				setSphereState={setSphereState}
-			>
-				<div className="text">
-					<h2>The most damaging phrase in language is 'It's always been done that way.'</h2>
-					<h4 className="spacer-top-1">- Admiral Grace Hopper</h4>
-					<p className="begin">Scroll to begin.</p>
-				</div>
-				<div className="text">
-					<h2>Andy Mag is an experiential magazine that enables readers to interact (engage) with diverse themes and ideas.</h2>
-				</div>
-				<div className="text">
-					<h2>Because a great story is worth remembering.</h2>
-				</div>
-				<div className="text">
-					<h2>Subscribe to Andy Mag for updates.</h2>
-				</div>
-			</GradientShow2>
+			<ColorShow chapterIndex={chapterIndex} colorShowActive={colorShowActive} setColorShowActive={setColorShowActive} setChapterIndex={setChapterIndex} setSphereState={setSphereState} darkMode={darkMode} />
 			<animated.div className="hold-icon" style={instructionsDivProps}>
 				{ !darkMode ? <img src="../assets/holdicon.svg" alt="Press and hold to learn more about Andy Mag"/> : <img src="../assets/holdicon_white.svg" alt="Press and hold to learn more about Andy Mag"/> }
 				<animated.p style={instructionsTextProps}>Press and hold to learn more about Andy Mag</animated.p>

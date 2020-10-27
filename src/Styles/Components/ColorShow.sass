@@ -1,0 +1,79 @@
+.ColorShow
+	touch-action: none
+	position: absolute
+	top: 0
+	height: 100%
+	grid-template-rows: repeat(13, 1fr)
+	width: 100%
+	transition: 0.5s background, 0.5s opacity, 0.5s visibility 
+	visibility: hidden
+	opacity: 0
+	background: #FFFFFF
+	&.active
+		visibility: visible
+		opacity: 1
+		z-index: 10
+	.ColorShowText
+		// text-align: center
+		padding: 0em 2em
+		grid-column: 1 / -1
+		grid-row: 6 / 10
+		&.out-down
+			span
+				span
+					transform: translateY(100%)
+		&.out-up
+			span
+				span
+					transform: translateY(-100%)
+		span
+			display: block
+			overflow: hidden
+			line-height: normal
+			span
+				font-family: Lato
+				font-weight: 600
+				transition: transform 0.6s cubic-bezier(.5,0,0,1),-webkit-transform 1s cubic-bezier(.5,0,0,1)
+				h4
+					font-size: 6.5vw
+				p
+					margin-top: 0.5em
+	.Arrows
+		transition: 0.6s opacity
+		display: flex
+		flex-direction: column
+		align-items: center
+		position: absolute
+		bottom: 5em
+		left: 0
+		right: 0
+		text-align: center
+		svg
+			path
+				transition: 0.25s fill
+
+@media screen and ( mix-width: 300px )
+	.ColorShow
+		.ColorShowText
+			span
+				span
+					h4
+						font-size: 6.43vw
+
+@media screen and ( min-width: 700px )
+	.ColorShow
+		.ColorShowText
+			padding: 0
+			grid-column: 2 / 6
+			width: 460px
+			margin: 0 auto
+			span
+				span
+					h4
+						font-size: 2.3em
+
+@media screen and ( min-width: 900px )
+	.ColorShow
+		.ColorShowText
+			grid-column: 4 / 9
+	
