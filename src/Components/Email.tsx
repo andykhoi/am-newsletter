@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react'
+import React, { FunctionComponent, useRef, useState } from 'react'
 import { useSpring, animated } from 'react-spring';
 
 // email form should add email to mailing list on directmailmac 
@@ -13,30 +13,45 @@ interface EmailProps {
 export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	let [success, setSuccess] = useState<Boolean | null>(null);
 	let [email, setEmail] = useState<string | undefined>('')
+	let [message, setMessage] = useState<string | null>(null)
+	let [processing, setProcessing] = useState<boolean>(false);
 
+	const formRef = useRef<HTMLFormElement>(null);
 	const submitHandler = (e:any) => {
 		e.preventDefault();
 
 		const url = process.env.REACT_APP_EMAIL_URL ? process.env.REACT_APP_EMAIL_URL : null;
-		const body = { email }
-		const options = {
+		// const body = { email };
+		const options: any = {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json; charset=utf-8',
-			},
-			body: JSON.stringify(body),
+			// mode: 'no-cors',
+			// headers: {
+			// 	'Content-Type': 'application/json; charset=utf-8',
+			// },
+			body: formRef.current ? new FormData(formRef.current) : null,
 		}
 
-		// will have to include logic that handles specific errors (duplicate emails, failure to fetch, etc.)
 		if (url) {
-			console.log(url);
 			fetch(url, options)
-			.then(res => res.json())
-			.then(data => {
-				console.log(data);
-				// data.statusCode === 202 ? setSuccess(true) : setSuccess(false);
+			.then(res => {
+				setProcessing(() => true);
+				return res.json()
 			})
-			.catch(error => console.log(error))
+			.then(data => {
+				if (data.result === 'success') {
+					setSuccess(() => true);
+					setMessage(() => data.message)
+				} else if (data.result === 'error') {
+					setSuccess(() => false);
+					setMessage(() => data.message);
+				}
+				setProcessing(() => false);
+			})
+			.catch(error => {
+				setSuccess(() => false);
+				setMessage(() => 'An error occurred please try again.')
+				console.log(error)
+			})
 		}
 	}
 
@@ -48,7 +63,6 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 
 	const submitButtonProps = useSpring({
 		background: darkMode ? '#754AAD' : '#EE84FF',
-		// boxShadow: darkMode ? 'inset 0px 0px 1px 0px #FFFFFF' : 'inset 0px 0px 2px 1px #FFFFFF',
 		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '8px 8px 24px rgba(176, 195, 210, .8)',
 		color: darkMode ? '#FFFFFF' : '#2E476E',
 		immediate: key => key === 'boxShadow'
@@ -56,20 +70,9 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 
 	return (
 		// if null do nothing, if false show fail, if true show success
-		<form onSubmit={submitHandler} className={success ? 'Email success' : (success === 'false' ? 'Email fail' : 'Email')}>
+		<form ref={formRef} onSubmit={submitHandler} className={success ? 'Email success' : (success === 'false' ? 'Email fail' : 'Email')}>
 			<animated.input className={darkMode ? 'darkmode' : ''} style={emailInputProps} name="Email" type="email" value={email} placeholder='email' onChange={(e:any) => setEmail(e.currentTarget.value)} required />
 			<animated.input style={submitButtonProps} type="submit" value="Subscribe"/>
 		</form>
 	)
 }
-
-// what is going on? Requesting data from directmailmac via fetch on the frontend is being blocked
-// potentially because I'm requesting from my localhost which is identified as the origin, making a 
-// request from the localhost to directmail is defined as a cross-origin request,
-
-// Wrong, for now, -- the preflight OPTIONS request that the browser sends to the server is returning with a 
-// 401. This may be a bug on their server configs. However, if it is the case I still don't know if 
-// a cross-origin request from localhost is allowed/will work. Even then, I shouldn't be exposing the 
-// API key to the frontend. So I will have to create a server folder and configure a quick server to
-// request to from the app, which then will post request to the API, responding to the frontend with a success -- 
-// allowing the component to make necessary changes to styling.
