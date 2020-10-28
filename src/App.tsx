@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-import './styles/base.sass'
+import './Styles/base.sass'
 import { MobileApp } from './Components/MobileApp'
 import { DesktopApp } from './Components/DesktopApp'
 

@@ -17,8 +17,7 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	const submitHandler = (e:any) => {
 		e.preventDefault();
 
-		// const url = `${process.env.REACT_APP_DEV_SERVER}/subscribe`;
-		const url = process.env.REACT_APP_DEV_SERVER + '/subscribe';
+		const url = process.env.REACT_APP_EMAIL_URL ? process.env.REACT_APP_EMAIL_URL : null;
 		const body = { email }
 		const options = {
 			method: 'POST',
@@ -29,13 +28,16 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 		}
 
 		// will have to include logic that handles specific errors (duplicate emails, failure to fetch, etc.)
-		fetch(url, options)
-		.then(res => res.json())
-		.then(data => {
-			console.log(data);
-			data.statusCode === 202 ? setSuccess(true) : setSuccess(false);
-		})
-		.catch(error => console.log(error))
+		if (url) {
+			console.log(url);
+			fetch(url, options)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data);
+				// data.statusCode === 202 ? setSuccess(true) : setSuccess(false);
+			})
+			.catch(error => console.log(error))
+		}
 	}
 
 	const emailInputProps = useSpring({
@@ -55,7 +57,7 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	return (
 		// if null do nothing, if false show fail, if true show success
 		<form onSubmit={submitHandler} className={success ? 'Email success' : (success === 'false' ? 'Email fail' : 'Email')}>
-			<animated.input className={darkMode ? 'darkmode' : ''} style={emailInputProps} type="email" value={email} placeholder='email' onChange={(e:any) => setEmail(e.currentTarget.value)} required />
+			<animated.input className={darkMode ? 'darkmode' : ''} style={emailInputProps} name="Email" type="email" value={email} placeholder='email' onChange={(e:any) => setEmail(e.currentTarget.value)} required />
 			<animated.input style={submitButtonProps} type="submit" value="Subscribe"/>
 		</form>
 	)
