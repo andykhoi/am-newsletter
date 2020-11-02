@@ -1,3 +1,4 @@
+import { resolveTxt } from 'dns';
 import React, { FunctionComponent, useRef, useState } from 'react'
 import { useSpring, animated } from 'react-spring';
 
@@ -16,42 +17,52 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	let [message, setMessage] = useState<string | null>(null)
 	let [processing, setProcessing] = useState<boolean>(false);
 
+	const reset = () => {
+		setMessage(() => null);
+		setSuccess(() => null);
+		setProcessing(() => false);
+	}
+
 	const formRef = useRef<HTMLFormElement>(null);
 	const submitHandler = (e:any) => {
+		// do nothing if successs
 		e.preventDefault();
-
-		const url = process.env.REACT_APP_EMAIL_URL ? process.env.REACT_APP_EMAIL_URL : null;
-		// const body = { email };
-		const options: any = {
-			method: 'POST',
-			// mode: 'no-cors',
-			// headers: {
-			// 	'Content-Type': 'application/json; charset=utf-8',
-			// },
-			body: formRef.current ? new FormData(formRef.current) : null,
-		}
-
-		if (url) {
-			fetch(url, options)
-			.then(res => {
+		if (!success) {
+			reset();
+			const url = process.env.REACT_APP_EMAIL_URL ? process.env.REACT_APP_EMAIL_URL : null;
+			// const body = { email };
+			const options: any = {
+				method: 'POST',
+				// mode: 'no-cors',
+				// headers: {
+				// 	'Content-Type': 'application/json; charset=utf-8',
+				// },
+				body: formRef.current ? new FormData(formRef.current) : null,
+			}
+	
+			if (url && !processing) {
 				setProcessing(() => true);
-				return res.json()
-			})
-			.then(data => {
-				if (data.result === 'success') {
-					setSuccess(() => true);
-					setMessage(() => data.message)
-				} else if (data.result === 'error') {
+				fetch(url, options)
+				.then(res => {
+					return res.json()
+				})
+				.then(data => {
+					if (data.result === 'success') {
+						setSuccess(() => true);
+						setMessage(() => data.message);
+					} else if (data.result === 'error') {
+						setSuccess(() => false);
+						setMessage(() => data.error);
+					}
+					setProcessing(() => false);
+				})
+				.catch(error => {
 					setSuccess(() => false);
-					setMessage(() => data.message);
-				}
-				setProcessing(() => false);
-			})
-			.catch(error => {
-				setSuccess(() => false);
-				setMessage(() => 'An error occurred please try again.')
-				console.log(error)
-			})
+					setMessage(() => 'An error occurred please try again.')
+					setProcessing(() => false);
+					// console.log(error)
+				})
+			}
 		}
 	}
 
@@ -62,17 +73,32 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	})
 
 	const submitButtonProps = useSpring({
-		background: darkMode ? '#754AAD' : '#EE84FF',
+		background: success ? '#61F04A' : darkMode ? '#754AAD' : '#EE84FF',
 		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '8px 8px 24px rgba(176, 195, 210, .8)',
-		color: darkMode ? '#FFFFFF' : '#2E476E',
+		color: success ? '#000000' : darkMode ? '#FFFFFF' : '#2E476E',
 		immediate: key => key === 'boxShadow'
 	})
 
 	return (
 		// if null do nothing, if false show fail, if true show success
-		<form ref={formRef} onSubmit={submitHandler} className={success ? 'Email success' : (success === 'false' ? 'Email fail' : 'Email')}>
-			<animated.input className={darkMode ? 'darkmode' : ''} style={emailInputProps} name="Email" type="email" value={email} placeholder='email' onChange={(e:any) => setEmail(e.currentTarget.value)} required />
-			<animated.input style={submitButtonProps} type="submit" value="Subscribe"/>
+		<form ref={formRef} onSubmit={submitHandler} className={ darkMode ? 'Email darkmode' : 'Email'}>
+			<animated.input
+				className={darkMode ? 'darkmode' : ''}
+				style={emailInputProps} name="Email"
+				type="email"
+				value={email}
+				placeholder='email'
+				onChange={(e:any) => setEmail(e.currentTarget.value)}
+				onFocus={() => {
+					reset();
+				}}
+				required
+			/>
+			<animated.input style={submitButtonProps} type="submit" value={success ? 'Subscribed' : processing ? '' : 'Subscribe'} />
+			{processing && <div className="dot-wrap"><div className="dot-flashing"></div></div> }
+			{success === false && <p className="error">{message}</p> }
 		</form>
 	)
 }
+
+// on focus -- clear message? 

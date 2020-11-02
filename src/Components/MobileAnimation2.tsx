@@ -32,7 +32,6 @@ const Camera = () => {
 		ref={camera}
 		aspect={aspect}
 		fov={fov}
-		//   position={[0, viewport.height / 2 - 200, cameraDistance]}
 		position={[0, 0, cameraDistance]}
 		onUpdate={self => self.updateProjectionMatrix()}
 	/>
@@ -53,6 +52,7 @@ export const MobileAnimation: FunctionComponent = () => {
 	let [scrollIndicatorPosition, setScrollIndicatorPosition] = useState<number>(scrollIndicatorPositions.current[0])
 
 	const instructionsDivProps = useSpring({
+		// background: 
 		opacity: instructionsVisible ? 1 : 0,
 		config: { mass: 1, friction: 10, clamp: true },
 	})
@@ -100,7 +100,8 @@ export const MobileAnimation: FunctionComponent = () => {
 				/>
 			</Canvas>
 			<ColorShow chapterIndex={chapterIndex} colorShowActive={colorShowActive} setColorShowActive={setColorShowActive} setChapterIndex={setChapterIndex} setSphereState={setSphereState} darkMode={darkMode} />
-			<animated.div className="hold-icon" style={instructionsDivProps}>
+			<animated.div className={darkMode ? "hold-icon darkMode" : "hold-icon"} style={instructionsDivProps}>
+				<div className="center"><div className="swiper"></div></div>
 				{ !darkMode ? <img src="../assets/holdicon.svg" alt="Press and hold to learn more about Andy Mag"/> : <img src="../assets/holdicon_white.svg" alt="Press and hold to learn more about Andy Mag"/> }
 				<animated.p style={instructionsTextProps}>Press and hold to learn more about Andy Mag</animated.p>
 			</animated.div>

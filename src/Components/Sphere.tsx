@@ -167,7 +167,7 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 
 	useEffect(() => {
 		if (size.height && camera) {
-			camera.lookAt(0, (-size.height / 5), 0);
+			camera.lookAt(0, (-size.height / 6), 0);
 		}
 	}, [size, camera])
 
