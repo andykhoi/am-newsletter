@@ -1,8 +1,8 @@
 import React, {
 	FunctionComponent,
-	PointerEvent,
+	// PointerEvent,
 	TouchEvent,
-	useCallback,
+	// useCallback,
 	useEffect,
 	useRef,
 	useState
@@ -11,9 +11,9 @@ import React, {
 // controlling overflowed span components
 // on chapter change -- animate to next 
 
-const isElementAtBottom = (e: HTMLDivElement) => {
-	return e.scrollTop === (e.scrollHeight - e.offsetHeight);
-}
+// const isElementAtBottom = (e: HTMLDivElement) => {
+// 	return e.scrollTop === (e.scrollHeight - e.offsetHeight);
+// }
 
 interface ColorShowProps {
 	chapterIndex: number,

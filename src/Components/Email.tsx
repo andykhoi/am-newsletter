@@ -1,4 +1,3 @@
-import { resolveTxt } from 'dns';
 import React, { FunctionComponent, useRef, useState } from 'react'
 import { useSpring, animated } from 'react-spring';
 
@@ -83,7 +82,6 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 		// if null do nothing, if false show fail, if true show success
 		<form ref={formRef} onSubmit={submitHandler} className={ darkMode ? 'Email darkmode' : 'Email'}>
 			<animated.input
-				// className={darkMode ? 'darkmode' : ''}
 				style={emailInputProps} name="Email"
 				type="email"
 				value={email}
