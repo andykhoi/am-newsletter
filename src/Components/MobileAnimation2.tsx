@@ -5,14 +5,16 @@ import React, {
 	useRef,
 	useEffect
 } from 'react';
+import { useSpring, animated } from 'react-spring';
+import { PerspectiveCamera } from 'three';
 import { Canvas, useThree } from 'react-three-fiber';
-// import * as THREE from 'three/'
 
 import { Sphere } from './Sphere2';
 import { ColorShow } from './ColorShow';
 import { MobileEmailForm } from './MobileEmailForm';
-import { useSpring, animated } from 'react-spring';
-import { PerspectiveCamera } from 'three';
+import { MobileInstructions } from './MobileInstructions';
+
+
 
 const Camera = () => {
 	const camera = useRef<PerspectiveCamera | null>(null)
@@ -25,8 +27,9 @@ const Camera = () => {
 	const halfFovRadians = Math.atan((height / 2) / distance)
 	const fov = 2 * halfFovRadians * (180/Math.PI)
 	useEffect(() => {
-		if (camera.current) void setDefaultCamera(camera.current)
-	}, [setDefaultCamera])
+		console.log(camera.current);
+		if (camera.current) setDefaultCamera(camera.current)
+	}, [size, setDefaultCamera])
 
 	return <perspectiveCamera
 		ref={camera}
@@ -48,26 +51,15 @@ export const MobileAnimation: FunctionComponent = () => {
 		mountAnimating: boolean
 	}>({ hold: false, direction: 'backwards', mountAnimating: true});
 	const [emailVisible, setEmailVisible] = useState<Boolean>(false);
-	const [instructionsVisible, setInstructionsVisible ] = useState<boolean>(false);
+	// const [instructionsVisible, setInstructionsVisible] = useState<boolean>(false);
+	const [instructionsState, setInstructionsState] = useState<{ position: 'up' | 'down', visible: boolean}>({ position: 'up', visible: false})
 	let [scrollIndicatorPosition, setScrollIndicatorPosition] = useState<number>(scrollIndicatorPositions.current[0])
-
-	const instructionsDivProps = useSpring({
-		// background: 
-		opacity: instructionsVisible ? 1 : 0,
-		config: { mass: 1, friction: 10, clamp: true },
-	})
-
-	const instructionsTextProps = useSpring({
-		color: darkMode ? '#FFFFFF' : '#000000',
-		config: { duration: 130 }
-	})
 
 	const scrollIndicatorAnimate = useSpring({
 		backgroundColor: darkMode ? '#FFFFFF' : '#000000',
 		top: scrollIndicatorPosition,
 		opacity: colorShowActive ? '1' : '0',
 		config: { clamp: true }
-		// config: { mass: 1, friction: 1, tension: 100, clamp: true }
 	})
 
 	useEffect(() => {
@@ -89,7 +81,7 @@ export const MobileAnimation: FunctionComponent = () => {
 				<Camera />
 				<Sphere
 					radius={135}
-					setInstructionsVisible={setInstructionsVisible}
+					setInstructionsState={setInstructionsState}
 					setEmailVisible={setEmailVisible}
 					inPosition={[0, 135, 0]}
 					sphereState={sphereState}
@@ -100,11 +92,7 @@ export const MobileAnimation: FunctionComponent = () => {
 				/>
 			</Canvas>
 			<ColorShow chapterIndex={chapterIndex} colorShowActive={colorShowActive} setColorShowActive={setColorShowActive} setChapterIndex={setChapterIndex} setSphereState={setSphereState} darkMode={darkMode} />
-			<animated.div className={darkMode ? "hold-icon darkMode" : "hold-icon"} style={instructionsDivProps}>
-				<div className="center"><div className="swiper"></div></div>
-				{ !darkMode ? <img src="../assets/holdicon.svg" alt="Press and hold to learn more about Andy Mag"/> : <img src="../assets/holdicon_white.svg" alt="Press and hold to learn more about Andy Mag"/> }
-				<animated.p style={instructionsTextProps}>Press and hold to learn more about Andy Mag</animated.p>
-			</animated.div>
+			<MobileInstructions darkMode={darkMode} instructionsState={instructionsState} setInstructionsState={setInstructionsState} />
 			<MobileEmailForm
 				sphereState={sphereState}
 				emailVisible={emailVisible}

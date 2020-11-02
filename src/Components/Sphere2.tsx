@@ -13,8 +13,12 @@ import { DoubleSide } from 'three/';
 
 interface SphereProps {
 	radius: number,
-	setInstructionsVisible: React.Dispatch<React.SetStateAction<boolean>>,
+	// setInstructionsVisible: React.Dispatch<React.SetStateAction<boolean>>,
 	setEmailVisible: React.Dispatch<React.SetStateAction<Boolean>>,
+	setInstructionsState: React.Dispatch<React.SetStateAction<{
+		position: 'up' | 'down';
+		visible: boolean;
+	}>>
 	sphereAnimationProps?: any,
 	setSphereState: React.Dispatch<React.SetStateAction<{
 		hold: boolean;
@@ -40,8 +44,9 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 	breakPoint,
 	// outPosition,
 	setEmailVisible,
-	setInstructionsVisible,
-	setColorShowActive
+	// setInstructionsVisible,
+	setColorShowActive,
+	setInstructionsState
 }) => {
 	/* 
 		TODO: 
@@ -56,9 +61,9 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 	const sphereRef = useRef<any>(null);
 	const {
 		camera,
-		camera: {
-			fov
-		},
+		// camera: {
+		// 	fov
+		// },
 		// viewport,
 		size,
 	}: { camera: any, viewport: any, size: any } = useThree();
@@ -131,18 +136,21 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		pointsPosition: setPosition(),
 		opacity: sphereState.mountAnimating ? 0 : 1,
 		onFrame: (arg: any) => {
-			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 50) {
+			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 20) {
 				if (sphereState.direction === 'backwards') {
-					setEmailVisible(() => true)
-					setInstructionsVisible(() => true)
+					setInstructionsState(prev => ({ ...prev, visible: true}))
 				} else {
-					setEmailVisible(() => false);
-					setInstructionsVisible(() => false)
+					setInstructionsState(prev => ({ ...prev, visible: false}))
+				}
+			} else if (sphereRef.current.position.z > 20 && sphereRef.current.position.z < 50) {
+				if (sphereState.direction === 'backwards') {
+					setEmailVisible(() => true);
+				} else {
+					setEmailVisible(() => false)
 				}
 			}
 		},
 		onRest: (arg: any) => {
-			console.log(sphereState);
 			if (outPosition.every((position: number, index: number) => {
 				if (!sphereState.mountAnimating) {
 					if (index === 0) {
@@ -164,13 +172,8 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 	})
 
 	useEffect(() => {
-		if (sphereRef.current) {
-			sphereRef.current.material.size = defaultPointSize.current / Math.tan( ( Math.PI / 180 ) * fov / 2 )
-		}
-	}, [fov])
-
-	useEffect(() => {
 		if (size.height && camera) {
+			sphereRef.current.material.size = defaultPointSize.current / Math.tan( ( Math.PI / 180 ) * camera.fov / 2 )
 			camera.lookAt(0, (-size.height / 6.5), 0);
 		}
 	}, [size, camera])

@@ -27,7 +27,7 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	const submitHandler = (e:any) => {
 		// do nothing if successs
 		e.preventDefault();
-		if (!success) {
+		if (!success && !processing) {
 			reset();
 			const url = process.env.REACT_APP_EMAIL_URL ? process.env.REACT_APP_EMAIL_URL : null;
 			// const body = { email };
