@@ -13,11 +13,23 @@
 		border-bottom: 2px solid black
 		border-radius: 0px
 		&::placeholder
-			transition: color 150
 			color: black
-		&.darkmode
+	input:-webkit-autofill,
+	input:-webkit-autofill:hover,
+	input:-webkit-autofill:focus,
+	input:-webkit-autofill:active 
+		-webkit-box-shadow: 0 0 0 30px rgb(249, 250, 252) inset !important
+	&.darkMode
+		input[type='email']
 			&::placeholder
-				color: white
+				color: #FFFFFF
+		input:-webkit-autofill
+			-webkit-text-fill-color: white
+			-webkit-box-shadow: 0 0 0 30px rgb(46, 49, 56) inset !important
+		input:-webkit-autofill:hover,
+		input:-webkit-autofill:focus,
+		input:-webkit-autofill:active 
+			-webkit-box-shadow: 0 0 0 30px rgb(46, 49, 56) inset !important
 	.submitWrapper
 		position: relative
 		input[type='submit']
@@ -35,36 +47,6 @@
 			display: block
 			&:focus
 				outline: none
-		input:-webkit-autofill
-			// -webkit-text-fill-color: transparent
-			// -webkit-box-shadow: 0 0 0px 1000px #ffffff00 inset
-			// background: transparent
-			// background-image: linear-gradient(to right, #D631D3, #AC16A7)
-			// background: #EE84FF
-		input:-webkit-autofill,
-		input:-webkit-autofill:hover,
-		input:-webkit-autofill:focus,
-		input:-webkit-autofill:active 
-			-webkit-box-shadow: 0 0 0 30px rgb(249, 250, 252) inset !important
-		&.darkmode
-			input:-webkit-autofill
-				-webkit-text-fill-color: white
-				-webkit-box-shadow: 0 0 0 30px rgb(46, 49, 56) inset !important
-			input:-webkit-autofill:hover,
-			input:-webkit-autofill:focus,
-			input:-webkit-autofill:active 
-				-webkit-box-shadow: 0 0 0 30px rgb(46, 49, 56) inset !important
-		.error
-			font-family: Lato
-			font-size: 13px
-			letter-spacing: 0.5px
-			font-weight: 400
-			color: #d878e7
-			position: absolute
-			left: 0
-			right: 0
-			text-align: center
-			padding: 7px 0px 0px 0px
 		.dot-wrap
 			position: absolute
 			left: 0
@@ -80,14 +62,11 @@
 				color: #d878e7
 				animation: dotFlashing 1s infinite linear alternate
 				animation-delay: .5s
-
 			.dot-flashing::before, .dot-flashing::after 
 				content: ''
 				display: inline-block
 				position: absolute
 				top: 0
-
-
 			.dot-flashing::before 
 				left: -15px
 				width: 10px
@@ -97,8 +76,6 @@
 				color: #d878e7
 				animation: dotFlashing 1s infinite alternate
 				animation-delay: 0s
-
-
 			.dot-flashing::after 
 				left: 15px
 				width: 10px
@@ -108,6 +85,17 @@
 				color: #d878e7
 				animation: dotFlashing 1s infinite alternate
 				animation-delay: 1s
+	.error
+		font-family: Lato
+		font-size: 13px
+		letter-spacing: 0.5px
+		font-weight: 400
+		color: #d878e7
+		position: absolute
+		left: 0
+		right: 0
+		text-align: center
+		padding: 7px 0px 0px 0px
 
 
 @keyframes dotFlashing 
