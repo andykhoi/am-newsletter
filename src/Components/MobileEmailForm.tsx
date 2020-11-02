@@ -7,6 +7,8 @@ interface MobileEmailFormProps {
 	emailVisible: Boolean,
 	darkMode: Boolean,
 	setDarkMode: React.Dispatch<React.SetStateAction<Boolean>>,
+	// setInstructionsVisible: React.Dispatch<React.SetStateAction<boolean>>,
+	// instructionsVisible: boolean,
 	sphereState: {
 		hold: Boolean;
 		direction: null | 'forwards' | 'backwards';
@@ -16,13 +18,22 @@ interface MobileEmailFormProps {
 
 export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ sphereState, emailVisible, darkMode, setDarkMode }) => {
 	const animationProps = useSpring({
-		config: { mass: 1, friction: 20, clamp: true },
+		// config: { mass: 1, friction: 8, clamp: true },
+		config: { duration: 150 },
 		opacity: !emailVisible ? 0 : 1,
 		bottom: !emailVisible ? -6 : 0,
 		background: darkMode ? '#2E3138' : '#F9FAFC',
 		// borderImage: darkMode ? 'linear-gradient(to top, #26282C, 70%, #363940) 1 0%' : 'linear-gradient(to right, #FFFFFF, #E5EFFA) 1 0%',
 		boxShadow: darkMode ? '0px 4px 13px rgba(29, 30, 35, .9)' : '0px 14px 18px rgba(31, 36, 39, .75)',
-		immediate: key => ['background', 'boxShadow'].includes(key)
+		immediate: key => ['background', 'boxShadow'].includes(key),
+		// onRest: ({ opacity }) => {
+		// 	!instructionsVisible && setInstructionsVisible((prev) => {
+		// 		if (opacity === 1 && sphereState.direction === "backwards") {
+		// 			return true
+		// 		}
+		// 		return prev
+		// 	})
+		// }
 	})
 
 	const textProps = useSpring({
