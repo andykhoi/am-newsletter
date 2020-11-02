@@ -74,7 +74,7 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 
 	const submitButtonProps = useSpring({
 		background: success ? '#61F04A' : darkMode ? '#754AAD' : '#EE84FF',
-		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '8px 8px 24px rgba(176, 195, 210, .8)',
+		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '5px 5px 30px rgba(176, 195, 210, .8)',
 		color: success ? '#000000' : darkMode ? '#FFFFFF' : '#2E476E',
 		immediate: key => key === 'boxShadow'
 	})
@@ -94,8 +94,10 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 				}}
 				required
 			/>
-			<animated.input style={submitButtonProps} type="submit" value={success ? 'Subscribed' : processing ? '' : 'Subscribe'} />
-			{processing && <div className="dot-wrap"><div className="dot-flashing"></div></div> }
+			<div>
+				<animated.input style={submitButtonProps} type="submit" value={success ? 'Subscribed' : processing ? '' : 'Subscribe'} />
+				{processing && <div className="dot-wrap"><div className="dot-flashing"></div></div> }
+			</div>
 			{success === false && <p className="error">{message}</p> }
 		</form>
 	)
