@@ -94,9 +94,10 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 				}}
 				required
 			/>
-			<div>
+			<div className="submitWrapper">
 				<animated.input style={submitButtonProps} type="submit" value={success ? 'Subscribed' : processing ? '' : 'Subscribe'} />
 				{processing && <div className="dot-wrap"><div className="dot-flashing"></div></div> }
+				{/* <div className="dot-wrap"><div className="dot-flashing"></div></div> */}
 			</div>
 			{success === false && <p className="error">{message}</p> }
 		</form>

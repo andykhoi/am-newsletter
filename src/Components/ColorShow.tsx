@@ -1,6 +1,7 @@
 import React, {
 	FunctionComponent,
 	PointerEvent,
+	TouchEvent,
 	useEffect,
 	useRef,
 	useState
@@ -8,6 +9,10 @@ import React, {
 
 // controlling overflowed span components
 // on chapter change -- animate to next 
+
+const isElementAtBottom = (e: HTMLDivElement) => {
+	return e.scrollTop === (e.scrollHeight - e.offsetHeight);
+}
 
 interface ColorShowProps {
 	chapterIndex: number,
@@ -33,6 +38,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 	// use chapter index to determine which slide to show
 	// determine swipe direction & length
 	const container = useRef<HTMLDivElement>(null);
+	let [preventTouch, setPreventTouch] = useState<boolean>(false);
 	let [transitioning, setTransitioning] = useState<boolean>(false);
 	let [initialized, setInitialized] = useState<boolean>(false);
 	let [pointerState, setPointerState] = useState<any>({
@@ -41,7 +47,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		yTravel: null,
 		xTravel: null,
 	})
-
+	// console.log(container.current ? isElementAtBottom(container.current) : null)
 	const backgroundColors = useRef<any>({
 		lightMode: ['#E4F0FA', '#D64773', '#CBCBCB', '#000000'],
 		darkMode: ['#000000', '#D64773', '#E4F0FA', '#F9FAFC']
@@ -70,11 +76,42 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		return -1
 	}
 
-	const pointerDownHandler = (e: PointerEvent) => {
+	// const pointerDownHandler = (e: PointerEvent) => {
+	// 	const {
+	// 		clientX,
+	// 		clientY,
+	// 		// preventDefault
+	// 	} = e
+	// 	setPointerState((prev: any) => {
+	// 		const updated = {
+	// 			xStart: clientX,
+	// 			yStart: clientY,
+	// 		}
+	// 		return { ...prev, ...updated}
+	// 	})
+	// }
+
+	// const pointerMoveHandler = (e: PointerEvent) => {
+	// 	const {
+	// 		clientX,
+	// 		clientY,
+	// 		// preventDefault
+	// 	} = e
+	// 	setPointerState((prev: any) => {
+	// 		const yTravel = prev.yStart ? prev.yStart - clientY : null;
+	// 		const xTravel = prev.xStart ? clientX - prev.xStart : null;
+	// 		return { ...prev, yTravel, xTravel }
+	// 	})
+	// }
+
+	const pointerDownHandler = (e: TouchEvent) => {
 		const {
-			clientX,
-			clientY
+			touches
 		} = e
+		const {
+			clientY,
+			clientX
+		} = touches[0]
 		setPointerState((prev: any) => {
 			const updated = {
 				xStart: clientX,
@@ -84,11 +121,14 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		})
 	}
 
-	const pointerMoveHandler = (e: PointerEvent) => {
+	const pointerMoveHandler = (e: TouchEvent) => {
 		const {
-			clientX,
-			clientY
+			touches
 		} = e
+		const {
+			clientY,
+			clientX
+		} = touches[0]
 		setPointerState((prev: any) => {
 			const yTravel = prev.yStart ? prev.yStart - clientY : null;
 			const xTravel = prev.xStart ? clientX - prev.xStart : null;
@@ -199,10 +239,9 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 
 		if (chapterIndex >= 0 && colorShowActive && initialized) {
 			if (getActiveSlideIndex() < chapterIndex) {
-				console.log('next')
 				next();
+				setPreventTouch(() => true)
 			} else if (getActiveSlideIndex() > chapterIndex) {
-				console.log('back')
 				back();
 			}
 		}
@@ -257,6 +296,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 										return arrowColors.current.lightMode[0]
 									}
 								})
+								setPreventTouch(() => false)
 								setInitialized(() => false);
 							}
 						}, 1000)
@@ -340,10 +380,16 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		<div
 			className="ColorShow grid"
 			ref={container}
-			onPointerDown={(e: PointerEvent) => pointerDownHandler(e)}
-			onPointerMove={(e: PointerEvent) => pointerMoveHandler(e)}
-			onPointerUp={() => pointerUpHandler()}
-			style={{ background: backgroundColor }}
+			// onPointerDown={(e: PointerEvent) => pointerDownHandler(e)}
+			// onPointerMove={(e: PointerEvent) => pointerMoveHandler(e)}
+			// onPointerUp={() => pointerUpHandler()}
+			onTouchStart={(e: TouchEvent) => pointerDownHandler(e)}
+			onTouchMove={(e: TouchEvent) => pointerMoveHandler(e)}
+			onTouchEnd={() => pointerUpHandler()}
+			style={{
+				background: backgroundColor,
+				touchAction: preventTouch ? 'none' : 'auto'
+			}}
 		>
 			<div className="ColorShowText out-down" style={{ color: darkMode ? '#E066DB' : '#334669'}}>
 				<span>
