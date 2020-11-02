@@ -2,6 +2,7 @@ import React, {
 	FunctionComponent,
 	PointerEvent,
 	TouchEvent,
+	useCallback,
 	useEffect,
 	useRef,
 	useState
@@ -35,8 +36,6 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 	setSphereState,
 	darkMode
 }) => {
-	// use chapter index to determine which slide to show
-	// determine swipe direction & length
 	const container = useRef<HTMLDivElement>(null);
 	let [preventTouch, setPreventTouch] = useState<boolean>(false);
 	let [transitioning, setTransitioning] = useState<boolean>(false);
@@ -145,6 +144,19 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		}))
 	}
 
+	const resizeHandler = () => {
+		setPreventTouch((prev) => {
+			if (container.current) {
+				if (container.current.clientHeight === window.innerHeight) {
+					return true
+				} else {
+					return false
+				}
+			}
+			return prev
+		})
+	}
+
 	useEffect(() => {
 		const next = () => {
 			if (container.current) {
@@ -238,9 +250,19 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		}
 
 		if (chapterIndex >= 0 && colorShowActive && initialized) {
+			setPreventTouch((prev) => {
+				if (container.current) {
+					if (container.current.clientHeight === window.innerHeight) {
+						return true
+					} else {
+						return false
+					}
+				}
+				return prev
+			})
 			if (getActiveSlideIndex() < chapterIndex) {
 				next();
-				setPreventTouch(() => true)
+				// setPreventTouch(() => true)
 			} else if (getActiveSlideIndex() > chapterIndex) {
 				back();
 			}
@@ -254,6 +276,11 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 			setBackgroundColor(() => backgroundColors.current.lightMode[0])
 		}
 	}, [darkMode, initialized])
+
+	useEffect(() => {
+		window.addEventListener('resize', resizeHandler);
+		return () => window.removeEventListener('resize', resizeHandler);
+	}, [])
 	
 	useEffect(() => {
 		const reset = () => {
