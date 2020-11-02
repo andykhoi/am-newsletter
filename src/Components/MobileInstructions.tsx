@@ -102,7 +102,6 @@ export const MobileInstructions: FunctionComponent<MobileInstructionsProps> = ({
 
 	return (
 		<animated.div
-			// className={darkMode ? "hold-icon darkMode" : "hold-icon"}
 			onPointerDown={(e: PointerEvent) => pointerDownHandler(e)}
 			onPointerMove={(e: PointerEvent) => pointerMoveHandler(e)}
 			onPointerUp={() => {
