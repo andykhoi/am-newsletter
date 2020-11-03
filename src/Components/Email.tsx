@@ -1,11 +1,13 @@
-import React, { FunctionComponent, useRef, useState } from 'react'
+import React, {
+	FunctionComponent,
+	useRef,
+	useState,
+	useContext,
+} from 'react'
 import { useSpring, animated } from 'react-spring';
 
-// email form should add email to mailing list on directmailmac 
-// on success there should be some indication on the frontend -- turns green with a success message
-// on failure there should be some indication on the frontend -- turns red with an error message
+import { ViewportContext } from '../context/viewportContext';
 
-// make an api call to directmailmac with the email address
 interface EmailProps {
 	darkMode: Boolean,
 }
@@ -15,6 +17,9 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	let [email, setEmail] = useState<string | undefined>('')
 	let [message, setMessage] = useState<string | null>(null)
 	let [processing, setProcessing] = useState<boolean>(false);
+	const { lockViewport, unlockViewport, currentDeviceHeight, lockedViewportHeight, lockedViewportWidth } = useContext(ViewportContext);
+
+	// let [lockedViewport, setLockedViewport] = useState<any>(null)
 
 	const reset = () => {
 		setMessage(() => null);
@@ -27,6 +32,7 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 		// do nothing if successs
 		e.preventDefault();
 		if (!success && !processing) {
+			// unlockViewport();
 			reset();
 			const url = process.env.REACT_APP_EMAIL_URL ? process.env.REACT_APP_EMAIL_URL : null;
 			// const body = { email };
@@ -89,17 +95,23 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 				onChange={(e:any) => setEmail(e.currentTarget.value)}
 				onFocus={() => {
 					reset();
+					if (!lockedViewportHeight && !lockedViewportWidth) {
+						lockViewport();
+					}
+				}}
+				onBlur={() => {
+					if (currentDeviceHeight === lockedViewportHeight) {
+						unlockViewport();
+					}
+					
 				}}
 				required
 			/>
 			<div className="submitWrapper">
 				<animated.input style={submitButtonProps} type="submit" value={success ? 'Subscribed' : processing ? '' : 'Subscribe'} />
 				{processing && <div className="dot-wrap"><div className="dot-flashing"></div></div> }
-				{/* <div className="dot-wrap"><div className="dot-flashing"></div></div> */}
 			</div>
 			{success === false && <p className="error">{message}</p> }
 		</form>
 	)
 }
-
-// on focus -- clear message? 

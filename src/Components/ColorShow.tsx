@@ -1,7 +1,7 @@
 import React, {
 	FunctionComponent,
-	// PointerEvent,
-	TouchEvent,
+	PointerEvent,
+	// TouchEvent,
 	// useCallback,
 	useEffect,
 	useRef,
@@ -37,7 +37,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 	darkMode
 }) => {
 	const container = useRef<HTMLDivElement>(null);
-	let [preventTouch, setPreventTouch] = useState<boolean>(false);
+	// let [preventTouch, setPreventTouch] = useState<boolean>(false);
 	let [transitioning, setTransitioning] = useState<boolean>(false);
 	let [initialized, setInitialized] = useState<boolean>(false);
 	let [pointerState, setPointerState] = useState<any>({
@@ -75,42 +75,11 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		return -1
 	}
 
-	// const pointerDownHandler = (e: PointerEvent) => {
-	// 	const {
-	// 		clientX,
-	// 		clientY,
-	// 		// preventDefault
-	// 	} = e
-	// 	setPointerState((prev: any) => {
-	// 		const updated = {
-	// 			xStart: clientX,
-	// 			yStart: clientY,
-	// 		}
-	// 		return { ...prev, ...updated}
-	// 	})
-	// }
-
-	// const pointerMoveHandler = (e: PointerEvent) => {
-	// 	const {
-	// 		clientX,
-	// 		clientY,
-	// 		// preventDefault
-	// 	} = e
-	// 	setPointerState((prev: any) => {
-	// 		const yTravel = prev.yStart ? prev.yStart - clientY : null;
-	// 		const xTravel = prev.xStart ? clientX - prev.xStart : null;
-	// 		return { ...prev, yTravel, xTravel }
-	// 	})
-	// }
-
-	const pointerDownHandler = (e: TouchEvent) => {
+	const pointerDownHandler = (e: PointerEvent) => {
 		const {
-			touches
-		} = e
-		const {
+			clientX,
 			clientY,
-			clientX
-		} = touches[0]
+		} = e
 		setPointerState((prev: any) => {
 			const updated = {
 				xStart: clientX,
@@ -120,20 +89,49 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		})
 	}
 
-	const pointerMoveHandler = (e: TouchEvent) => {
+	const pointerMoveHandler = (e: PointerEvent) => {
 		const {
-			touches
-		} = e
-		const {
+			clientX,
 			clientY,
-			clientX
-		} = touches[0]
+		} = e
 		setPointerState((prev: any) => {
 			const yTravel = prev.yStart ? prev.yStart - clientY : null;
 			const xTravel = prev.xStart ? clientX - prev.xStart : null;
 			return { ...prev, yTravel, xTravel }
 		})
 	}
+
+	// const pointerDownHandler = (e: TouchEvent) => {
+	// 	const {
+	// 		touches
+	// 	} = e
+	// 	const {
+	// 		clientY,
+	// 		clientX
+	// 	} = touches[0]
+	// 	setPointerState((prev: any) => {
+	// 		const updated = {
+	// 			xStart: clientX,
+	// 			yStart: clientY,
+	// 		}
+	// 		return { ...prev, ...updated}
+	// 	})
+	// }
+
+	// const pointerMoveHandler = (e: TouchEvent) => {
+	// 	const {
+	// 		touches
+	// 	} = e
+	// 	const {
+	// 		clientY,
+	// 		clientX
+	// 	} = touches[0]
+	// 	setPointerState((prev: any) => {
+	// 		const yTravel = prev.yStart ? prev.yStart - clientY : null;
+	// 		const xTravel = prev.xStart ? clientX - prev.xStart : null;
+	// 		return { ...prev, yTravel, xTravel }
+	// 	})
+	// }
 
 	const pointerUpHandler = () => {
 		setPointerState(() => ({
@@ -144,18 +142,18 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		}))
 	}
 
-	const resizeHandler = () => {
-		setPreventTouch((prev) => {
-			if (container.current) {
-				if (container.current.clientHeight === window.innerHeight) {
-					return true
-				} else {
-					return false
-				}
-			}
-			return prev
-		})
-	}
+	// const resizeHandler = () => {
+	// 	setPreventTouch((prev) => {
+	// 		if (container.current) {
+	// 			if (container.current.clientHeight === window.innerHeight) {
+	// 				return true
+	// 			} else {
+	// 				return false
+	// 			}
+	// 		}
+	// 		return prev
+	// 	})
+	// }
 
 	useEffect(() => {
 		const next = () => {
@@ -250,17 +248,17 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		}
 
 		if (chapterIndex >= 0 && colorShowActive && initialized) {
-			setPreventTouch((prev) => {
-				if (container.current) {
-					// console.
-					if (container.current.clientHeight === window.innerHeight) {
-						return true
-					} else {
-						return false
-					}
-				}
-				return prev
-			})
+			// setPreventTouch((prev) => {
+			// 	if (container.current) {
+			// 		// console.
+			// 		if (container.current.clientHeight === window.innerHeight) {
+			// 			return true
+			// 		} else {
+			// 			return false
+			// 		}
+			// 	}
+			// 	return prev
+			// })
 			if (getActiveSlideIndex() < chapterIndex) {
 				next();
 				// setPreventTouch(() => true)
@@ -278,10 +276,10 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		}
 	}, [darkMode, initialized])
 
-	useEffect(() => {
-		window.addEventListener('resize', resizeHandler);
-		return () => window.removeEventListener('resize', resizeHandler);
-	}, [])
+	// useEffect(() => {
+	// 	window.addEventListener('resize', resizeHandler);
+	// 	return () => window.removeEventListener('resize', resizeHandler);
+	// }, [])
 	
 	useEffect(() => {
 		const reset = () => {
@@ -324,7 +322,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 										return arrowColors.current.lightMode[0]
 									}
 								})
-								setPreventTouch(() => false)
+								// setPreventTouch(() => false)
 								setInitialized(() => false);
 							}
 						}, 1000)
@@ -408,15 +406,15 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		<div
 			className="ColorShow grid"
 			ref={container}
-			// onPointerDown={(e: PointerEvent) => pointerDownHandler(e)}
-			// onPointerMove={(e: PointerEvent) => pointerMoveHandler(e)}
-			// onPointerUp={() => pointerUpHandler()}
-			onTouchStart={(e: TouchEvent) => pointerDownHandler(e)}
-			onTouchMove={(e: TouchEvent) => pointerMoveHandler(e)}
-			onTouchEnd={() => pointerUpHandler()}
+			onPointerDown={(e: PointerEvent) => pointerDownHandler(e)}
+			onPointerMove={(e: PointerEvent) => pointerMoveHandler(e)}
+			onPointerUp={() => pointerUpHandler()}
+			// onTouchStart={(e: TouchEvent) => pointerDownHandler(e)}
+			// onTouchMove={(e: TouchEvent) => pointerMoveHandler(e)}
+			// onTouchEnd={() => pointerUpHandler()}
 			style={{
 				background: backgroundColor,
-				touchAction: preventTouch ? 'none' : 'auto'
+				// touchAction: preventTouch ? 'none' : 'auto'
 			}}
 		>
 			<div className="ColorShowText out-down" style={{ color: darkMode ? '#E066DB' : '#334669'}}>
