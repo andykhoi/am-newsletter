@@ -252,6 +252,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 		if (chapterIndex >= 0 && colorShowActive && initialized) {
 			setPreventTouch((prev) => {
 				if (container.current) {
+					// console.
 					if (container.current.clientHeight === window.innerHeight) {
 						return true
 					} else {

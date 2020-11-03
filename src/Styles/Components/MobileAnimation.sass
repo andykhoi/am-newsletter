@@ -1,4 +1,6 @@
 .MobileAnimation
+	// height: 100vh
+	// height: -webkit-fill-available
 	height: 100%
 	width: 100%
 	position: relative
@@ -7,23 +9,25 @@
 		bottom: 5em
 
 .Canvas
+	// min-height: 100% !important
 	position: absolute
+	// height: 100%
 	// z-index: 2
 
 .hold-icon
 	display: flex
 	position: absolute
-	bottom: 230px
+	bottom: 222px
 	width: 164px
 	left: 0
 	right: 0
 	z-index: 3
 	margin: 0 auto
 	padding: 0.7em 1em
-	border-radius: 7px
+	border-radius: 6px
 	background: #FFFFFF
-	border: 1px solid #FAFAFA
-	box-shadow: 0px 0px 1px #B0C3D21A
+	border: 1px solid #f3f3f3
+	// box-shadow: 0px 0px 1px #B0C3D21A
 	transition: bottom .15s cubic-bezier(.5,0,0,1)
 	touch-action: none
 	.center
@@ -48,7 +52,7 @@
 	&.darkMode
 		background: #353940
 		border: 1px solid #242424
-		box-shadow: 0px 0px 1px #0000001A
+		// box-shadow: 0px 0px 1px #0000001A
 		.center
 			.swiper
 				background: #ffffff
@@ -56,7 +60,7 @@
 		bottom: 161px
 .logo
 	position: absolute
-	top: 25px
+	top: 30px
 	left: 2em
 	width: 36px
 	z-index: 15

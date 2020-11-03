@@ -52,7 +52,7 @@ export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ spher
 
 	return (
 		<animated.div className="MobileEmailForm" style={animationProps}>
-			<animated.p style={textProps}>Stay Updated</animated.p>
+			<animated.h5 style={textProps}>Stay Updated</animated.h5>
 			<Email darkMode={darkMode} />
 			<animated.button style={buttonProps} className="mode-switch" onClick={() => setDarkMode(() => !darkMode)}>
 				{ darkMode ? 'L' : 'D'}
