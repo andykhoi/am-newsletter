@@ -7,14 +7,17 @@
 		-webkit-appearance: none
 		background: transparent
 		display: block
-		width: 300px
+		width: 290px
 		outline: none
 		padding: 0px
 		padding-bottom: 3px
+		padding: 0px 3px 3px 0px
 		border-bottom: 2px solid black
 		border-radius: 0px
 		&::placeholder
-			color: black
+			color: #abacb4
+		&:focus
+			border-bottom: 2px solid #334669
 	input:-webkit-autofill,
 	input:-webkit-autofill:hover,
 	input:-webkit-autofill:focus,
@@ -30,9 +33,10 @@
 			-webkit-box-shadow: 0 0 0 30px rgb(46, 49, 56) inset !important
 		input[type='email']
 			&::placeholder
-				color: white
+				color: #7F8489
 	.submitWrapper
 		position: relative
+		width: 300px
 		input[type='submit']
 			width: 100%
 			font-family: Lato
@@ -41,7 +45,7 @@
 			box-shadow: inset 0px 0px 2px 1px #FFFFFF
 			border: none
 			border-radius: 20px
-			letter-spacing: 0.8px
+			letter-spacing: 0.5px
 			padding: 0.8em
 			font-size: 1em
 			color: white
@@ -52,7 +56,7 @@
 			position: absolute
 			left: 0
 			right: 0
-			bottom: 16px
+			bottom: 17px
 			.dot-flashing 
 				margin: 0 auto
 				position: relative

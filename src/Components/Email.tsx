@@ -14,7 +14,7 @@ interface EmailProps {
 
 export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	let [success, setSuccess] = useState<Boolean | null>(null);
-	let [email, setEmail] = useState<string | undefined>('')
+	let [email, setEmail] = useState<string>('')
 	let [message, setMessage] = useState<string | null>(null)
 	let [processing, setProcessing] = useState<boolean>(false);
 	const { lockViewport, unlockViewport, currentDeviceHeight, lockedViewportHeight, lockedViewportWidth } = useContext(ViewportContext);
@@ -72,14 +72,15 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 	}
 
 	const emailInputProps = useSpring({
-		color: darkMode ? '#FFFFFF' : '#000000',
-		borderBottom: darkMode ? '1.5px solid #FFFFFF' : '1.5px solid #000000',
-		config: { duration: 130 }
+		color: darkMode ? email.length > 0 ? '#FFFFFF' : '#464950' : email.length > 0 ? '#334669' : '#D8DCE6',
+		borderBottom: darkMode ?  email.length > 0 ? '2px solid #FFFFFF' : '2px solid #464950' : email.length > 0 ? '2px solid #334669' : '2px solid #D8DCE6',
+		config: { duration: 0 },
+		// immediate: (key) => key === 'color'
 	})
 
 	const submitButtonProps = useSpring({
 		background: success ? '#61F04A' : darkMode ? '#754AAD' : '#EE84FF',
-		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '5px 5px 30px rgba(176, 195, 210, .8)',
+		boxShadow: darkMode ? '21px 17px 45px rgba(14, 28, 33, .8)' : '5px 6px 25px rgba(176, 195, 210, .8)',
 		color: success ? '#000000' : darkMode ? '#FFFFFF' : '#2E476E',
 		immediate: key => key === 'boxShadow'
 	})

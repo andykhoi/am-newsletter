@@ -37,7 +37,7 @@ export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ spher
 	})
 
 	const textProps = useSpring({
-		color: darkMode ? '#FFFFFF' : '#000000',
+		color: darkMode ? '#FFFFFF' : '#334669',
 		config: { duration: 130 }
 	})
 

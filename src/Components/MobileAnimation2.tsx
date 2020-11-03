@@ -3,7 +3,7 @@ import React, {
 	useState,
 	// useMemo,
 	useRef,
-	useEffect
+	useEffect, useContext
 } from 'react';
 import { useSpring, animated } from 'react-spring';
 import { PerspectiveCamera } from 'three';
@@ -14,7 +14,7 @@ import { ColorShow } from './ColorShow';
 import { MobileEmailForm } from './MobileEmailForm';
 import { MobileInstructions } from './MobileInstructions';
 
-
+import { ViewportContext } from '../context/viewportContext';
 
 const Camera = () => {
 	const camera = useRef<PerspectiveCamera | null>(null)
@@ -41,6 +41,7 @@ const Camera = () => {
   }
 
 export const MobileAnimation: FunctionComponent = () => {
+	const { isPortrait } = useContext(ViewportContext);
 	const scrollIndicatorPositions = useRef<number[]>([-1, 10, 22, 31.5]);
 	const [darkMode, setDarkMode] = useState<Boolean>(false);
 	const [chapterIndex, setChapterIndex ] = useState<number>(0);
@@ -67,7 +68,7 @@ export const MobileAnimation: FunctionComponent = () => {
 	}, [chapterIndex])
 
 	return (
-		<div className="MobileAnimation">
+		<div className={`MobileAnimation${!isPortrait ? ' hide' : ''}`}>
 			<div className="logo" onClick={() => {
 				setColorShowActive(() => false)
 			}}>

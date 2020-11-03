@@ -5,7 +5,7 @@ import React, {
 	Dispatch,
 	SetStateAction,
 	useEffect,
-	useRef
+	useRef,
 } from 'react';
 
 type ViewportContextType = {
@@ -96,9 +96,13 @@ export const ViewportContextWrapper: FunctionComponent = (props) => {
 				return window.innerWidth <= 900
 			});
 		})
-		window.addEventListener('orientationchange', () => {
-			setIsPortrait(() => {
-				return window.matchMedia("(orientation: portrait)").matches
+		window.addEventListener('orientationchange', (e: any) => {
+			setIsPortrait((prev) => {
+				const target = e.target;
+				if (target) {
+					return target.screen.orientation.angle === 0
+				}
+				return prev
 			})
 		})
 
