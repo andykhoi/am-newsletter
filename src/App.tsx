@@ -11,7 +11,7 @@ function App() {
 	// need to wrap this in context
 	// let [height, setHeight] = useState<number>(window.innerHeight);
 	// let [width, setWidth] = useState<number>(window.innerWidth);
-	const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+	// const appHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
 	
 	const windowResizeHandler = useCallback(() => {
 		// const viewport = document.querySelector("meta[name=viewport]");
@@ -26,12 +26,12 @@ function App() {
 
 	useEffect(() => {
 		window.addEventListener('resize', windowResizeHandler)
-		window.addEventListener('resize', appHeight)
+		// window.addEventListener('resize', appHeight)
 	}, [windowResizeHandler]);
 
-	useEffect(() => {
-		appHeight()
-	}, [])
+	// useEffect(() => {
+	// 	appHeight()
+	// }, [])
 
 	// useEffect(() => {
 	// 	if (viewport.current) {
