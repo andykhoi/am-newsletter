@@ -91,13 +91,36 @@ export const ViewportContextWrapper: FunctionComponent = (props) => {
 	useEffect(() => {
 		const watchOrientationChanges = () => {
 			const mql = window.matchMedia("(orientation: portrait)");
-			mql.addEventListener('change', (m) => {
-				if (m.matches) {
-					setIsPortrait(() => true);
-				} else {
-					setIsPortrait(() => false)
+			// mql.addListener((m) => {
+			// 	if (m.matches) {
+			// 		setIsPortrait(() => true);
+			// 	} else {
+			// 		setIsPortrait(() => false)
+			// 	}
+			// })
+			try {
+				// Chrome & Firefox
+				mql.addEventListener('change', (m) => {
+					if (m.matches) {
+						setIsPortrait(() => true);
+					} else {
+						setIsPortrait(() => false)
+					}
+				});
+			} catch (e1) {
+				try {
+					// Safari
+					mql.addListener((m) => {
+						if (m.matches) {
+							setIsPortrait(() => true);
+						} else {
+							setIsPortrait(() => false)
+						}
+					});
+				} catch (e2) {
+					console.error(e2);
 				}
-			})
+			}
 		}
 		watchOrientationChanges();
 		window.addEventListener('resize', () => {
