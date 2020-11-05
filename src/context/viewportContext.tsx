@@ -89,6 +89,17 @@ export const ViewportContextWrapper: FunctionComponent = (props) => {
 	}
 
 	useEffect(() => {
+		const watchOrientationChanges = () => {
+			const mql = window.matchMedia("(orientation: portrait)");
+			mql.addEventListener('change', (m) => {
+				if (m.matches) {
+					setIsPortrait(() => true);
+				} else {
+					setIsPortrait(() => false)
+				}
+			})
+		}
+		watchOrientationChanges();
 		window.addEventListener('resize', () => {
 			setCurrentDeviceHeight(() => window.innerHeight);
 			setCurrentDeviceWidth(() => window.innerWidth);
@@ -96,15 +107,15 @@ export const ViewportContextWrapper: FunctionComponent = (props) => {
 				return window.innerWidth <= 900
 			});
 		})
-		window.addEventListener('orientationchange', (e: any) => {
-			setIsPortrait((prev) => {
-				const target = e.target;
-				if (target) {
-					return target.screen.orientation.angle === 0
-				}
-				return prev
-			})
-		})
+		// window.addEventListener('orientationchange', (e: any) => {
+		// 	setIsPortrait((prev) => {
+		// 		const target = e.target;
+		// 		if (target) {
+		// 			return target.screen.orientation.angle === 0
+		// 		}
+		// 		return prev
+		// 	})
+		// })
 
 		return () => {
 			window.removeEventListener('resize', () => {
@@ -114,11 +125,18 @@ export const ViewportContextWrapper: FunctionComponent = (props) => {
 					return window.innerWidth <= 900
 				});
 			})
-			window.removeEventListener('orientationchange', () => {
-				setIsPortrait(() => {
-					return window.matchMedia("(orientation: portrait)").matches
-				})
-			})
+			// mql.removeEventListener('change', (m) => {
+			// 	if (m.matches) {
+			// 		setIsPortrait(() => true);
+			// 	} else {
+			// 		setIsPortrait(() => false)
+			// 	}
+			// })
+			// window.removeEventListener('orientationchange', () => {
+			// 	setIsPortrait(() => {
+			// 		return window.matchMedia("(orientation: portrait)").matches
+			// 	})
+			// })
 		}
 	}, [])
 
