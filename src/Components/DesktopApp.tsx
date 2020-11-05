@@ -14,7 +14,7 @@ import { Canvas } from 'react-three-fiber';
 import { DesktopText } from './DesktopText';
 // import { DesktopOrb } from './DesktopOrb';
 import { Orb } from './DesktopOrb3';
-// import { DesktopInstructions } from './DesktopInstructions'
+import { DesktopInstructions } from './DesktopInstructions'
 import { Email } from './DesktopEmailForm';
 
 interface OrbState {
@@ -28,14 +28,17 @@ export const DesktopApp: FunctionComponent = () => {
 	let [subscribeActive, setSubscribeActive] = useState<boolean>(false);
 	let [emailActive, setEmailActive] = useState<boolean>(false);
 	let [buttonShadow, setButtonShadow] = useState<string>('1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
-	const scrollIndicatorPositions = useRef<number[]>([0, 10, 19, 28.2]);
+	const scrollIndicatorPositions = useRef<number[]>([0, 9, 18, 26]);
 	let [scrollIndicatorPosition, setScrollIndicatorPosition] = useState<number>(scrollIndicatorPositions.current[0])
 	let [scrollIndicatorHeight, setScrollIndicatorHeight] = useState<number>(0);
 	let [canvasViewport, setCanvasViewport] = useState<{width: number, height: number, factor: number} | null>(null)
 	let [orbMovingState, setOrbMovingState] = useState<'out' | 'resting' | 'to' | 'intersecting' | 'in' | 'subscribe' | 'subscribe_hold' | 'at_threshold'>('resting')
 	let [orbHold, setOrbHold] = useState<boolean>(false);
 	let [pointerPosition, setPointerPosition] = useState<[number | null, number | null]>([null, null])
-	// console.log(scrollIndicatorHeight);
+
+	let [instructionPosition, setInstructionPosition] = useState<[number, number] | null>(null); 
+	let [instructionActive, setInstructionActive] = useState<boolean>(false);
+
 	let wheelThreshold = useRef<number>(40);
 	let containerRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +49,22 @@ export const DesktopApp: FunctionComponent = () => {
 		height: subscribeActive ? scrollIndicatorHeight : 19,
 		config: { clamp: true },
 		backgroundColor: !subscribeActive ? 'black' : 'white',
+		// opacity: subscribeActive ? 0 : 1,
+		// top: scrollIndicatorPosition,
+		// bottom: 'auto',
+		// height: 19,
+		// config: { clamp: true },
+		// backgroundColor: 'black',
 	})
+
+	// const subscribeIndicatorAnimate = useSpring({
+	// 	opacity: subscribeActive ? 1 : 0,
+	// 	top: 'auto',
+	// 	height: scrollIndicatorHeight,
+	// 	bottom: 1,
+	// 	backgroundColor: 'white',
+	// 	config: { clamp: true }
+	// })
 
 	// const instructionsProps = useSpring({
 	// 	opacity: orbHold ? 0 : 1
@@ -101,11 +119,28 @@ export const DesktopApp: FunctionComponent = () => {
 					far: -300
 				}}
 			>	
-				<Orb setBackgroundColor={setBackgroundColor} setButtonShadow={setButtonShadow} setChapterIndex={setChapterIndex} setScrollIndicatorHeight={setScrollIndicatorHeight} orbHold={orbHold} setOrbHold={setOrbHold} setEmailActive={setEmailActive} pointerPosition={pointerPosition} chapterIndex={chapterIndex} orbMovingState={orbMovingState} resetPointer={resetPointer} setOrbMovingState={setOrbMovingState} subscribeActive={subscribeActive} setSubscribeActive={setSubscribeActive} />
+				<Orb
+					setInstructionActive={setInstructionActive}
+					setInstructionPosition={setInstructionPosition}
+					setBackgroundColor={setBackgroundColor}
+					setButtonShadow={setButtonShadow}
+					setChapterIndex={setChapterIndex}
+					setScrollIndicatorHeight={setScrollIndicatorHeight}
+					orbHold={orbHold}
+					setOrbHold={setOrbHold}
+					setEmailActive={setEmailActive}
+					pointerPosition={pointerPosition}
+					chapterIndex={chapterIndex}
+					orbMovingState={orbMovingState}
+					resetPointer={resetPointer}
+					setOrbMovingState={setOrbMovingState}
+					subscribeActive={subscribeActive}
+					setSubscribeActive={setSubscribeActive} />
 			</Canvas>
-			<div className="logo" onClick={() => setChapterIndex(() => 0)}>
+			<div className="logo">
 				{ !subscribeActive ? <img src='../assets/logo.svg' alt='Logo' /> : <img src='../assets/logo_white.svg' alt='Logo' />}
 				<animated.div className="scroll-indicator" style={scrollIndicatorAnimate} />
+				{/* <animated.div className="scroll-indicator" style={subscribeIndicatorAnimate} /> */}
 			</div>
 			<DesktopText chapterIndex={chapterIndex} setChapterIndex={setChapterIndex} wheelThreshold={wheelThreshold.current} setBackgroundColor={setBackgroundColor} setButtonShadow={setButtonShadow} setOrbMovingState={setOrbMovingState} subscribeActive={subscribeActive} />
 			<animated.div className="SubscribeButton" style={subscribeButtonProps}>
@@ -123,7 +158,7 @@ export const DesktopApp: FunctionComponent = () => {
 				<a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/theandymag/"><img src="../assets/instagram.svg" alt="Instagram" /></a>			
 				<a target="_blank" rel="noopener noreferrer" href="https://twitter.com/theandymag_"><img src="../assets/twitter.svg" alt="Twitter" /></a>
 			</div>
-			{/* <DesktopInstructions /> */}
+			<DesktopInstructions instructionPosition={instructionPosition} instructionActive={instructionActive} orbHold={orbHold}/>
 			<Email orbHold={orbHold} emailActive={emailActive} />
 		</div>
 	)

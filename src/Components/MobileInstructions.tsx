@@ -99,7 +99,6 @@ export const MobileInstructions: FunctionComponent<MobileInstructionsProps> = ({
 
 	useEffect(() => {
 		if (pointerState.yTravel !== null) {
-			console.log(pointerState);
 			setInstructionsState((prev) => {
 				if (prev.position === 'up' && pointerState.yTravel < -8) {
 					// resetPointer();

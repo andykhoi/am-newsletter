@@ -23,6 +23,8 @@ interface OrbProps {
 	setChapterIndex: React.Dispatch<React.SetStateAction<number>>
 	setBackgroundColor: React.Dispatch<React.SetStateAction<string>>
 	setButtonShadow: React.Dispatch<React.SetStateAction<string>>
+	setInstructionPosition: React.Dispatch<React.SetStateAction<[number, number] | null>>
+	setInstructionActive: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const Orb: FunctionComponent<OrbProps> = ({
@@ -39,9 +41,11 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	setScrollIndicatorHeight,
 	setChapterIndex,
 	setBackgroundColor,
-	setButtonShadow
+	setButtonShadow,
+	setInstructionPosition,
+	setInstructionActive
 }) => {
-	const { viewport } = useThree();
+	const { viewport, camera } = useThree();
 	const orbRef = useRef<THREE.Points | null>(null)
 	const previousPosition = useRef<[number, number, number] | null>(null)
 	const closestSide = useRef<string | null>(null)
@@ -182,7 +186,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 		subscribe_hold: {
 			mass: 70,
 			// friction: 50,
-			tension: 100,
+			tension: 140,
 			clamp: true
 			// duration: 600
 		},
@@ -257,6 +261,17 @@ export const Orb: FunctionComponent<OrbProps> = ({
 		return false
 	}, [orbMovingState, orbPosition])
 
+	const placeInstructions = useCallback(() => {
+		const center = viewport.width < 1280 ? new THREE.Vector3(-220, 0, 0) :  new THREE.Vector3(-260, 0, 0);
+		const radius = viewport.width < 1280 ? 200 : 240;
+
+		center.project(camera);
+		center.x = center.x * (0.5 * viewport.width) + 0.5 * viewport.width + (0.5 * radius);
+		center.y = -center.y * (0.5 * viewport.height) + 0.5 * viewport.height + radius;
+
+		setInstructionPosition(() => [center.x, center.y]);
+	}, [viewport, camera, setInstructionPosition])
+
 	const { position, opacity, transparent } = useSpring({
 		position: orbPosition,
 		opacity: orbOpacity,
@@ -276,12 +291,14 @@ export const Orb: FunctionComponent<OrbProps> = ({
 				setOrbPosition(() => orbPositions[chapterIndex].start);
 			} else if (match === 'subscribe') {
 				setEmailActive(() => true)
+				setInstructionActive(() => true)
 			} else if (match === 'at_threshold') {
 				if (opacity === 0) {
 					// do not set subscribe back to active until orb is at pre position
 					setChapterIndex(() => 0)
 					setOrbMovingState(() => 'to')
 					setEmailActive(() => false)
+					setInstructionActive(() => false)
 					setOrbHold(() => false)
 					setOrbPosition(() => orbPositions[0].pre)
 					setBackgroundColor(() => '#D695AB')
@@ -410,8 +427,12 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	}, [viewport])
 
 	const isOrbIntersecting = useCallback(() => {
-		return !subscribeActive ? isSphereIntersectingBox(orbMaskSphereBbox.current, textBbox1.current) || isSphereIntersectingBox(orbMaskSphereBbox.current, subscribeBbox.current) || isSphereIntersectingBox(orbMaskSphereBbox.current, textBbox2.current) || isSphereIntersectingBox(orbMaskSphereBbox.current, textBbox3.current) : false
-	}, [isSphereIntersectingBox, subscribeActive])
+		return !subscribeActive && orbMovingState !== 'out' ? isSphereIntersectingBox(orbMaskSphereBbox.current, textBbox1.current) || isSphereIntersectingBox(orbMaskSphereBbox.current, subscribeBbox.current) || isSphereIntersectingBox(orbMaskSphereBbox.current, textBbox2.current) || isSphereIntersectingBox(orbMaskSphereBbox.current, textBbox3.current) : false
+	}, [isSphereIntersectingBox, subscribeActive, orbMovingState])
+
+	useEffect(() => {
+		placeInstructions();
+	}, [placeInstructions])
 
 	useEffect(() => {
 		computeBoundingAreas();
@@ -482,6 +503,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
  
 	useFrame(() => {
 		if (orbRef.current !== null) {
+			// console.log(orbRef.current.position);
 			autoRotateOrb(0.001);
 
 			// update the orbMaskSphereBbox to the position of the orbMask
@@ -501,7 +523,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 					})
 					setScrollIndicatorHeight((prev) => {
 						if (orbRef.current !== null) {
-							if (subscribePosition.current[1] - orbRef.current.position.y < 1) {
+							if (subscribePosition.current[1] - orbRef.current.position.y === 0) {
 								const maxHeight = 47.2;
 								const x1 = subscribePosition.current[0];
 								const currentX = orbRef.current.position.x;
@@ -535,7 +557,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 					setScrollIndicatorHeight((prev) => {
 						if (orbRef.current !== null) {
 							// percentage is 100 when origin is atleast 10 units away from origin
-							if (subscribePosition.current[1] - orbRef.current.position.y < 1) {
+							if (subscribePosition.current[1] - orbRef.current.position.y === 0) {
 								const maxHeight = 47.2;
 								const x1 = subscribePosition.current[0];
 								const currentX = orbRef.current.position.x;
@@ -659,7 +681,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 				</mesh>
 				<mesh
 					ref={subscribeRef}
-					position={[0, -viewport.height / 2.65, 0]}
+					position={[0, -viewport.height / 2 + 135, 0]}
 				>
 					<boxGeometry
 						attach="geometry"

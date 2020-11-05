@@ -4,6 +4,50 @@
 	height: 100%
 	width: 100%
 	position: relative
+	.hold-icon
+		display: flex
+		position: absolute
+		bottom: 222px
+		width: 164px
+		left: 0
+		right: 0
+		z-index: 3
+		margin: 0 auto
+		padding: 0.7em 1em
+		border-radius: 6px
+		background: #FFFFFF
+		border: 1px solid #f3f3f3
+		// box-shadow: 0px 0px 1px #B0C3D21A
+		transition: bottom .15s cubic-bezier(.5,0,0,1)
+		touch-action: none
+		.center
+			left: 0
+			right: 0
+			position: absolute
+			top: 4px
+			.swiper
+				width: 40px
+				height: 1px
+				margin: 0 auto
+				background: #000000
+				border-radius: 2px
+				transition: .13s background
+		img
+			width: 17px
+		p
+			display: inline-block
+			margin-left: 0.5em
+			font-family: aileron
+			font-size: 0.833rem
+		&.darkMode
+			background: #353940
+			border: 1px solid #242424
+			// box-shadow: 0px 0px 1px #0000001A
+			.center
+				.swiper
+					background: #ffffff
+		&.down
+			bottom: 161px
 	.begin
 		position: absolute
 		bottom: 5em
@@ -14,51 +58,6 @@
 	position: absolute
 	// height: 100%
 	// z-index: 2
-
-.hold-icon
-	display: flex
-	position: absolute
-	bottom: 222px
-	width: 164px
-	left: 0
-	right: 0
-	z-index: 3
-	margin: 0 auto
-	padding: 0.7em 1em
-	border-radius: 6px
-	background: #FFFFFF
-	border: 1px solid #f3f3f3
-	// box-shadow: 0px 0px 1px #B0C3D21A
-	transition: bottom .15s cubic-bezier(.5,0,0,1)
-	touch-action: none
-	.center
-		left: 0
-		right: 0
-		position: absolute
-		top: 4px
-		.swiper
-			width: 40px
-			height: 1px
-			margin: 0 auto
-			background: #000000
-			border-radius: 2px
-			transition: .13s background
-	img
-		width: 17px
-	p
-		display: inline-block
-		margin-left: 0.5em
-		font-family: aileron
-		font-size: 0.833rem
-	&.darkMode
-		background: #353940
-		border: 1px solid #242424
-		// box-shadow: 0px 0px 1px #0000001A
-		.center
-			.swiper
-				background: #ffffff
-	&.down
-		bottom: 161px
 .logo
 	position: absolute
 	top: 30px
