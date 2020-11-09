@@ -23,7 +23,7 @@
 			color: white
 			font-family: Overpass
 			position: absolute
-			bottom: 0
+			bottom: 0px
 			pointer-events: none
 			opacity: 0
 			transition: opacity 0.4s 0.3s, transform 0.15s, color 0.15s
@@ -36,15 +36,80 @@
 			bottom: 10px
 			opacity: 0
 			transition: opacity 0.4s 0.3s
+			cursor: pointer
+			pointer-events: all
 			// transition-delay: opacity 0.5s
 		input[type="email"]
 			margin: 3.5em 0em 0em 0em
+			padding-bottom: 4px
 			border-color: white
-			width: 337px
+			width: 300px
+			padding-right: 37px
 			color: white
 			opacity: 0
 			transition: opacity 0.4s 0.3s, border-color 0.15s
+		input:-webkit-autofill
+			-webkit-text-fill-color: white
+			-webkit-box-shadow: 0 0 0 30px rgb(35, 27, 27) inset !important
+		input:-webkit-autofill:hover,
+		input:-webkit-autofill:focus,
+		input:-webkit-autofill:active 
+			-webkit-box-shadow: 0 0 0 30px rgb(35, 27, 27) inset !important
 			// transition-delay: opacity 0.5s
+		.dot-wrap
+			position: absolute
+			left: 313px
+			bottom: 11px
+			// opacity: 0
+			.dot-flashing 
+				margin: 0 auto
+				position: relative
+				width: 8px
+				height: 8px
+				border-radius: 5px
+				background-color: #d878e7
+				color: #d878e7
+				animation: dotFlashing 1s infinite linear alternate
+				animation-delay: .5s
+			.dot-flashing::before, .dot-flashing::after 
+				content: ''
+				display: inline-block
+				position: absolute
+				top: 0
+			.dot-flashing::before 
+				left: -14px
+				width: 8px
+				height: 8px
+				border-radius: 5px
+				background-color: #d878e7
+				color: #d878e7
+				animation: dotFlashing 1s infinite alternate
+				animation-delay: 0s
+			.dot-flashing::after 
+				left: 14px
+				width: 8px
+				height: 8px
+				border-radius: 5px
+				background-color: #d878e7
+				color: #d878e7
+				animation: dotFlashing 1s infinite alternate
+				animation-delay: 1s
+		.Error
+			position: absolute
+			margin-top: 6px
+			color: #C247C3
+			font-family: Lato
+		&.focused
+			label
+				transform: translateY(-115%)
+				color: #717171
+				h4
+					font-size: 1em
+			input[type="email"]
+				border-color: #C247C3
+		&.success
+			input[type="email"]
+				border-color: #47C34A
 	// .hold-icon
 	// 	opacity: 0
 	// 	visibility: hidden
@@ -70,15 +135,24 @@
 		// 	width: 120px
 		// 	visibility: visible
 		// 	opacity: 1
-	&.focused
-		.desktopEmailWrapper
-			label
-				transform: translateY(-100%)
-				color: #717171
-				h4
-					font-size: 1em
-			input[type="email"]
-				border-color: #C247C3
+	// &.focused
+	// 	.desktopEmailWrapper
+	// 		label
+	// 			transform: translateY(-100%)
+	// 			color: #717171
+	// 			h4
+	// 				font-size: 1em
+	// 		input[type="email"]
+	// 			border-color: #C247C3
+		
+
+@keyframes dotFlashing 
+  0% 
+    background-color: #d878e7
+  50%,
+  100% 
+    background-color: #ebe6ff
+
 @media (min-width: 1280px)
 	.DesktopEmail
 		.desktopEmailWrapper

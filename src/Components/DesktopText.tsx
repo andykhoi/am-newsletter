@@ -120,6 +120,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 							if (textTransitioning === 'out-up') {
 								setChapterIndex(() => 1)
 								setBackgroundColor(() => '#D695C7')
+								setButtonShadow(() => '1px 2px 7px 0px rgba(190, 131, 176, 0.95), -1px -2px 7px rgba(241, 167, 224, 1)')
 							} else if (textTransitioning === 'in') {
 								setTextTransitioning(() => null)
 							}
@@ -151,7 +152,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 							} else if (textTransitioning === 'out-down') {
 								setChapterIndex(() => 0)
 								setBackgroundColor(() => '#D695AB')
-								setButtonShadow(() => '1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
+								setButtonShadow(() => '1px 2px 7px 0px rgba(189, 132, 151, 1), -1px -2px 7px rgba(246, 169, 195, 1)')
 							} else if (textTransitioning === 'in') {
 								setTextTransitioning(() => null)
 							}
@@ -174,7 +175,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 							} else if (textTransitioning === 'out-down') {
 								setChapterIndex(() => 1)
 								setBackgroundColor(() => '#D695C7')
-								setButtonShadow(() => '1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
+								setButtonShadow(() => '1px 2px 7px 0px rgba(190, 131, 176, 0.95), -1px -2px 7px rgba(241, 167, 224, 1)')
 							} else if (textTransitioning === 'in') {
 								setTextTransitioning(() => null)
 							}
