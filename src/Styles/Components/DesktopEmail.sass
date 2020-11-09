@@ -18,7 +18,8 @@
 				h3
 					color: white
 					font-family: Overpass Extra Bold
-					width: 337px
+					width: 341px
+					font-weight: 400
 		label
 			color: white
 			font-family: Overpass
@@ -26,7 +27,8 @@
 			bottom: 0px
 			pointer-events: none
 			opacity: 0
-			transition: opacity 0.4s 0.3s, transform 0.15s, color 0.15s
+			// transition: opacity 0.4s 0.3s, transform 0.15s, color 0.15s
+			transition: opacity 0.4s 0.3s, bottom 0.15s, color 0.15s
 			// transition-delay: opacity 0.5s
 			h4
 				transition: font-size 0.15s
@@ -101,7 +103,8 @@
 			font-family: Lato
 		&.focused
 			label
-				transform: translateY(-115%)
+				// transform: translateY(-115%)
+				bottom: 28px
 				color: #717171
 				h4
 					font-size: 1em
