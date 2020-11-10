@@ -28,7 +28,7 @@ export const DesktopApp: FunctionComponent = () => {
 	let [subscribeActive, setSubscribeActive] = useState<boolean>(false);
 	let [emailActive, setEmailActive] = useState<boolean>(false);
 	let [buttonShadow, setButtonShadow] = useState<string>('1px 2px 7px 0px rgba(189, 132, 151, 1), -1px -2px 7px rgba(246, 169, 195, 1)')
-	const scrollIndicatorPositions = useRef<number[]>([0, 9, 18, 26]);
+	const scrollIndicatorPositions = useRef<number[]>([0, 9, 19, 30]);
 	let [scrollIndicatorPosition, setScrollIndicatorPosition] = useState<number>(scrollIndicatorPositions.current[0])
 	let [scrollIndicatorHeight, setScrollIndicatorHeight] = useState<number>(0);
 	let [canvasViewport, setCanvasViewport] = useState<{width: number, height: number, factor: number} | null>(null)
