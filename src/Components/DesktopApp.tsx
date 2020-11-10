@@ -81,11 +81,34 @@ export const DesktopApp: FunctionComponent = () => {
 
 	const subscribeButtonProps = useSpring({
 		opacity: subscribeActive ? 0 : 1,
-		config: {
-			mass: 1,
-			friction: 4,
-			clamp: true,
-		}
+		config: () => {
+			if (subscribeActive) {
+				return {
+					// mass: 1,
+					// friction: 2,
+					// clamp: true,
+					duration: 100
+				}
+			} else {
+				return  {
+					mass: 1,
+					friction: 1,
+					clamp: true,
+					// duration: 100
+				}
+			}
+		},
+		delay: !subscribeActive ? 270 : undefined
+		// delay: (key: string) => {
+		// 	if (key === 'opacity' && !subscribeActive) {
+		// 		return 400
+		// 	}
+		// }
+		// config: {
+		// 	mass: 1,
+		// 	friction: 4,
+		// 	clamp: true,
+		// }
 	})
 
 	return (
@@ -161,7 +184,7 @@ export const DesktopApp: FunctionComponent = () => {
 				<button
 					onClick={() => setSubscribeActive(() => true)}
 					style={{
-						boxShadow: buttonShadow
+						boxShadow: subscribeActive ? '' : buttonShadow
 					}}
 				>
 					SUBSCRIBE
