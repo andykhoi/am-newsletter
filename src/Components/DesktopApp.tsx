@@ -47,9 +47,12 @@ export const DesktopApp: FunctionComponent = () => {
 		top: !subscribeActive ? scrollIndicatorPosition : 'auto',
 		bottom: subscribeActive ? 1 : 'auto',
 		height: subscribeActive ? scrollIndicatorHeight : 19,
-		config: { clamp: true },
+		// height: 19,
+		config: {
+			clamp: true
+		},
 		backgroundColor: !subscribeActive ? 'black' : 'white',
-		// immediate: (key: string) => key === 'height' && subscribeActive,
+		immediate: (key: string) => key === 'height' && subscribeActive,
 		// opacity: subscribeActive ? 0 : 1,
 		// top: scrollIndicatorPosition,
 		// bottom: 'auto',

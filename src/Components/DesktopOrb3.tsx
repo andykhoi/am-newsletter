@@ -531,7 +531,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 								if (currentX !== null) {
 									percentage = Math.abs(x1 - currentX) / Math.abs(x1)
 								}
-								return percentage * maxHeight
+								return percentage <= 0.01 ? 0 : percentage * maxHeight
 							}
 						}
 						return prev
@@ -570,7 +570,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 									// atHoldThresholdAutomator();
 									setOrbMovingState(() => 'at_threshold');
 								}
-								return percentage * maxHeight
+								return percentage <= 0.01 ? 0 : percentage * maxHeight
 							}
 						}
 						return prev
