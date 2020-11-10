@@ -524,7 +524,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 					setScrollIndicatorHeight((prev) => {
 						if (orbRef.current !== null) {
 							if (subscribePosition.current[1] - orbRef.current.position.y === 0) {
-								const maxHeight = 47.2;
+								const maxHeight = 49;
 								const x1 = subscribePosition.current[0];
 								const currentX = orbRef.current.position.x;
 								let percentage = 0
@@ -558,7 +558,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 						if (orbRef.current !== null) {
 							// percentage is 100 when origin is atleast 10 units away from origin
 							if (subscribePosition.current[1] - orbRef.current.position.y === 0) {
-								const maxHeight = 47.2;
+								const maxHeight = 49;
 								const x1 = subscribePosition.current[0];
 								const currentX = orbRef.current.position.x;
 								let percentage = 0
