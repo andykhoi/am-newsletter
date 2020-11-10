@@ -302,7 +302,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 					setOrbHold(() => false)
 					setOrbPosition(() => orbPositions[0].pre)
 					setBackgroundColor(() => '#D695AB')
-					setButtonShadow(() => '1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
+					setButtonShadow(() => '1px 2px 7px 0px rgba(189, 132, 151, 1), -1px -2px 7px rgba(246, 169, 195, 1)')
 				}
 			}
 		}

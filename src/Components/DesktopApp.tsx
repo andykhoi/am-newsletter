@@ -168,9 +168,9 @@ export const DesktopApp: FunctionComponent = () => {
 				</button>
 			</animated.div>
 			<div className="SocialMedia">
-				<a target="_blank" rel="noopener noreferrer" href="https://www.snapchat.com/add/theandymag"><img src="../assets/snapchat.svg" alt="Snapchat" /></a>			
-				<a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/theandymag/"><img src="../assets/instagram.svg" alt="Instagram" /></a>			
-				<a target="_blank" rel="noopener noreferrer" href="https://twitter.com/theandymag_"><img src="../assets/twitter.svg" alt="Twitter" /></a>
+				<a className="Snapchat" target="_blank" rel="noopener noreferrer" href="https://www.snapchat.com/add/theandymag"><img src="../assets/snapchat.svg" alt="Snapchat" /></a>			
+				<a className="Instagram" target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/theandymag/"><img src="../assets/instagram.svg" alt="Instagram" /></a>			
+				<a className="Twitter" target="_blank" rel="noopener noreferrer" href="https://twitter.com/theandymag_"><img src="../assets/twitter.svg" alt="Twitter" /></a>
 			</div>
 			<DesktopInstructions instructionPosition={instructionPosition} instructionActive={instructionActive} orbHold={orbHold}/>
 			<Email orbHold={orbHold} emailActive={emailActive} />
