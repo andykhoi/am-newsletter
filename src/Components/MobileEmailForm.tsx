@@ -54,9 +54,9 @@ export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ spher
 
 	const buttonProps = useSpring({
 		// border: darkMode ? '2px solid #FFFFFF' : '2px solid #000000',
-		background: darkMode ? '#2C3036' : '#E6EEF8',
+		background: darkMode ? '#2C3036' : '#ebf2fa',
 		color: darkMode ? '#FFFFFF' : '#000000',
-		boxShadow: !darkMode ? '-4px -2px 10px rgba(255, 255, 255, 1), 4px 2px 18px rgba(170, 187, 201, 0.9)' : '-2px -1px 7px rgba(72, 78, 83, 0.75), 3px 1px 7px rgba(22, 26, 28, 0.9)',
+		boxShadow: !darkMode ? '-4px -2px 9px rgba(255, 255, 255, .95), 4px 2px 18px rgba(170, 187, 201, 0.8)' : '-2px -1px 7px rgba(72, 78, 83, 0.7), 3px 1px 7px rgba(22, 26, 28, 0.9)',
 		config: { duration: 130 },
 		immediate: key => ['background', 'boxShadow'].includes(key)
 	})
