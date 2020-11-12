@@ -447,24 +447,24 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 				</span>
 				<span>
 					<span style={{ transitionDelay: '0.05s'}}>
-						<h4>magazine that enables</h4>
+						<h4>magazine, telling meaningful</h4>
 					</span>
 				</span>
 				<span>
 					<span style={{ transitionDelay: '0.1s'}}>
-						<h4>readers to interact (engage)</h4>
+						<h4>stories and enhancing digital</h4>
 					</span>
 				</span>
 				<span>
 					<span style={{ transitionDelay: '0.15s'}}>
-						<h4>with diverse themes and </h4>
+						<h4>experiences.</h4>
 					</span>
 				</span>
-				<span>
+				{/* <span>
 					<span style={{ transitionDelay: '0.2s'}}>
 						<h4>ideas.</h4>
 					</span>
-				</span>
+				</span> */}
 			</div>
 			<div className="ColorShowText out-down" style={{ color: '#D64773'}}>
 				<span>

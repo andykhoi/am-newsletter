@@ -148,7 +148,7 @@ export const MobileInstructions: FunctionComponent<MobileInstructionsProps> = ({
 		>
 			<div className="center"><div className="swiper"></div></div>
 			{ !darkMode ? <img src="../assets/holdicon.svg" alt="Press and hold to learn more about Andy Mag"/> : <img src="../assets/holdicon_white.svg" alt="Press and hold to learn more about Andy Mag"/> }
-			<animated.p style={instructionsTextProps}>Press and hold to learn more about Andy Mag</animated.p>
+			<animated.p style={instructionsTextProps}>Hold down orb to learn more about Andy Mag</animated.p>
 		</animated.div>
 	)
 }

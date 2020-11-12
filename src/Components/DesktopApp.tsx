@@ -94,14 +94,15 @@ export const DesktopApp: FunctionComponent = () => {
 				}
 			} else {
 				return  {
-					mass: 1,
-					friction: 1,
+					// mass: ,
+					tension: 800,
+					friction: 5,
 					clamp: true,
-					// duration: 100
+					// duration: 80
 				}
 			}
 		},
-		delay: !subscribeActive ? 270 : undefined
+		delay: !subscribeActive ? 220 : undefined
 		// delay: (key: string) => {
 		// 	if (key === 'opacity' && !subscribeActive) {
 		// 		return 400
