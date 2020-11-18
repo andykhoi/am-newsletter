@@ -83,7 +83,20 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 
 	useFrame(() => {
 		if (sphereRef.current) {
-			return sphereRef.current.rotation.y = sphereRef.current.rotation.y + 0.003
+			sphereRef.current.rotation.y = sphereRef.current.rotation.y + 0.003
+			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 20) {
+				if (sphereState.direction === 'backwards') {
+					setInstructionsState(prev => ({ ...prev, visible: true}))
+				} else {
+					setInstructionsState(prev => ({ ...prev, visible: false}))
+				}
+			} else if (sphereRef.current.position.z > 20 && sphereRef.current.position.z < 50) {
+				if (sphereState.direction === 'backwards') {
+					setEmailVisible(() => true);
+				} else {
+					setEmailVisible(() => false)
+				}
+			}
 		}
 	});
 
@@ -142,21 +155,21 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		config: { mass: 1.8, tension: 84, friction: 22, clamp: true },
 		pointsPosition: setPosition(),
 		opacity: sphereState.mountAnimating ? 0 : 1,
-		onFrame: (arg: any) => {
-			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 20) {
-				if (sphereState.direction === 'backwards') {
-					setInstructionsState(prev => ({ ...prev, visible: true}))
-				} else {
-					setInstructionsState(prev => ({ ...prev, visible: false}))
-				}
-			} else if (sphereRef.current.position.z > 20 && sphereRef.current.position.z < 50) {
-				if (sphereState.direction === 'backwards') {
-					setEmailVisible(() => true);
-				} else {
-					setEmailVisible(() => false)
-				}
-			}
-		},
+		// onFrame: (arg: any) => {
+		// 	if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 20) {
+		// 		if (sphereState.direction === 'backwards') {
+		// 			setInstructionsState(prev => ({ ...prev, visible: true}))
+		// 		} else {
+		// 			setInstructionsState(prev => ({ ...prev, visible: false}))
+		// 		}
+		// 	} else if (sphereRef.current.position.z > 20 && sphereRef.current.position.z < 50) {
+		// 		if (sphereState.direction === 'backwards') {
+		// 			setEmailVisible(() => true);
+		// 		} else {
+		// 			setEmailVisible(() => false)
+		// 		}
+		// 	}
+		// },
 		onRest: (arg: any) => {
 			if (outPosition.every((position: number, index: number) => {
 				if (!sphereState.mountAnimating) {
