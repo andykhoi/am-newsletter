@@ -3,13 +3,16 @@ import React, {
 	useRef,
 	useCallback,
 	useMemo,
-	useEffect,
-	// useState,
+	useEffect, 
+	useState,
+	// useContext,
 } from 'react';
 import * as THREE from 'three/';
 import { useFrame, useThree } from 'react-three-fiber';
 import { useSpring, a } from 'react-spring/three'
 import { DoubleSide } from 'three/';
+
+// import { ViewportContext } from '../context/viewportContext';
 
 interface SphereProps {
 	radius: number,
@@ -58,6 +61,8 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 				- opacity fade in
 				- orbLive ? --> fade and ease in to start position, 
 	*/ 
+	// const { currentDeviceWidth } = useContext(ViewportContext);
+
 	const sphereRef = useRef<any>(null);
 	const {
 		camera,
@@ -67,6 +72,8 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		// viewport,
 		size,
 	}: { camera: any, viewport: any, size: any } = useThree();
+
+	// let [scale, setScale] = useState([size.width - 220, size.width - 220, size.width - 220]);
 
 	const defaultPointSize = useRef<number>(1.7);
 	const inPosition: [number, number, number] = [0, 0, 0];
@@ -175,6 +182,9 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		if (size.height && camera) {
 			sphereRef.current.material.size = defaultPointSize.current / Math.tan( ( Math.PI / 180 ) * camera.fov / 2 )
 			camera.lookAt(0, (-size.height / 6.5), 0);
+			// setScale(() => {
+			// 	return [size.width - 220, size.width - 220, size.width - 220]
+			// })
 		}
 	}, [size, camera])
 
@@ -207,6 +217,7 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 				})}
 				onPointerUp={() => pointerUpHandler()}
 				position={sphereAnimationProps.circlePosition}
+				// scale={scale}
 			>
 				<sphereBufferGeometry
 					attach='geometry'
@@ -218,7 +229,7 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 				ref={sphereRef}
 				// ref={sphereRef}
 				position={sphereAnimationProps.pointsPosition}
-				// scale={[1,1,1]}
+				// scale={scale}
 			>	
 				<geometry
 					attach='geometry'

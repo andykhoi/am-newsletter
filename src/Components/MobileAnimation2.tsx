@@ -81,12 +81,12 @@ export const MobileAnimation: FunctionComponent = () => {
 			>
 				<Camera />
 				<Sphere
-					radius={135}
+					radius={142}
 					setInstructionsState={setInstructionsState}
 					setEmailVisible={setEmailVisible}
 					inPosition={[0, 135, 0]}
 					sphereState={sphereState}
-					outPosition={[0, 60, 646]}
+					outPosition={[0, 65, 655]}
 					setSphereState={setSphereState}
 					breakPoint={468}
 					setColorShowActive={setColorShowActive}
