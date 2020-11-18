@@ -136,7 +136,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 				onWheel={(e) => wheelHandler(e)}
 			>
 				<span>
-					<span><h2>Andy Mag is an experiential magazine,</h2></span>
+					<span><h2>Andy Mag is an experiential magazine—</h2></span>
 				</span>
 				<span>
 					<span style={{ transitionDelay: '0.06s'}}><h2>telling meaningful stories and enhancing</h2></span>

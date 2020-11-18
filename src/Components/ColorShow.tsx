@@ -447,7 +447,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 				</span>
 				<span>
 					<span style={{ transitionDelay: '0.05s'}}>
-						<h4>magazine, telling meaningful</h4>
+						<h4>magazine—telling meaningful</h4>
 					</span>
 				</span>
 				<span>
