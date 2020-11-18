@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/static/css/main.a1c72834.chunk.css",
-    "main.js": "/static/js/main.474737f9.chunk.js",
-    "main.js.map": "/static/js/main.474737f9.chunk.js.map",
+    "main.css": "/static/css/main.80a823b2.chunk.css",
+    "main.js": "/static/js/main.a47be994.chunk.js",
+    "main.js.map": "/static/js/main.a47be994.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.13a864f6.js",
     "runtime-main.js.map": "/static/js/runtime-main.13a864f6.js.map",
     "static/js/2.ea85566c.chunk.js": "/static/js/2.ea85566c.chunk.js",
     "static/js/2.ea85566c.chunk.js.map": "/static/js/2.ea85566c.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.513d57ce748abc86c12f011eda66d6f7.js": "/precache-manifest.513d57ce748abc86c12f011eda66d6f7.js",
+    "precache-manifest.78a9139321414ece8e31740418de5c59.js": "/precache-manifest.78a9139321414ece8e31740418de5c59.js",
     "service-worker.js": "/service-worker.js",
-    "static/css/main.a1c72834.chunk.css.map": "/static/css/main.a1c72834.chunk.css.map",
+    "static/css/main.80a823b2.chunk.css.map": "/static/css/main.80a823b2.chunk.css.map",
     "static/js/2.ea85566c.chunk.js.LICENSE.txt": "/static/js/2.ea85566c.chunk.js.LICENSE.txt",
     "static/media/base.sass": "/static/media/overpass-extrabold.018fb40a.otf"
   },
   "entrypoints": [
     "static/js/runtime-main.13a864f6.js",
     "static/js/2.ea85566c.chunk.js",
-    "static/css/main.a1c72834.chunk.css",
-    "static/js/main.474737f9.chunk.js"
+    "static/css/main.80a823b2.chunk.css",
+    "static/js/main.a47be994.chunk.js"
   ]
 }
