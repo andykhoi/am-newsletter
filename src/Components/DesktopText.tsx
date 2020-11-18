@@ -136,10 +136,10 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 				onWheel={(e) => wheelHandler(e)}
 			>
 				<span>
-					<span><h2>Andy Mag is an experiential magazine that</h2></span>
+					<span><h2>Andy Mag is an experiential magazine,</h2></span>
 				</span>
 				<span>
-					<span style={{ transitionDelay: '0.06s'}}><h2>enables readers to interact (engage) with diverse</h2></span>
+					<span style={{ transitionDelay: '0.06s'}}><h2>telling meaningful stories and enhancing</h2></span>
 				</span>
 				<span>
 					<span 
@@ -157,7 +157,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 								setTextTransitioning(() => null)
 							}
 						}}
-					><h2>themes and ideas.</h2></span>
+					><h2>digital experiences.</h2></span>
 				</span>
 			</div>
 			<div

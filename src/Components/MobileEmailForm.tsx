@@ -56,7 +56,7 @@ export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ spher
 		// border: darkMode ? '2px solid #FFFFFF' : '2px solid #000000',
 		background: darkMode ? '#2C3036' : '#ebf2fa',
 		color: darkMode ? '#FFFFFF' : '#000000',
-		boxShadow: !darkMode ? '-4px -2px 9px rgba(255, 255, 255, .95), 4px 2px 18px rgba(170, 187, 201, 0.8)' : '-2px -1px 7px rgba(72, 78, 83, 0.7), 3px 1px 7px rgba(22, 26, 28, 0.9)',
+		boxShadow: !darkMode ? '-4px -2px 9px rgba(255, 255, 255, .95), 4px 2px 18px rgba(170, 187, 201, 0.8)' : '-1px -1px 7px rgba(72, 78, 83, 0.8), 3px 1px 7px rgba(22, 26, 28, 1)',
 		config: { duration: 130 },
 		immediate: key => ['background', 'boxShadow'].includes(key)
 	})
@@ -109,7 +109,6 @@ export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ spher
 									</g>
 								</g>
 							</svg>
-							{/* <img src="../assets/twit_mob.svg" alt="Twitter Icon" /> */}
 						</div>
 					</a>
 					<a target="_blank" rel="noopener noreferrer" href="https://www.snapchat.com/add/theandymag">
@@ -121,7 +120,6 @@ export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ spher
 									</g>
 								</g>
 							</svg>
-							{/* <img src="../assets/snap_mob.svg" alt="Snapchat Icon" /> */}
 						</div>
 					</a>
 					<a target="_blank" rel="noopener noreferrer" href="https://open.spotify.com/playlist/4FwbDv3IN0IeKszud1U0OC?si=dYtV_c9aQC2Fl2UBAUI4ww">
@@ -136,13 +134,28 @@ export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ spher
 									</g>
 								</g>
 							</svg>
-							{/* <img src="../assets/spotify_mob.svg" alt="Spotify Icon" /> */}
 						</div>
 					</a>
 				</div>
 			</div>
 			<animated.button style={buttonProps} className="mode-switch" onClick={() => setDarkMode(() => !darkMode)}>
-				{ darkMode ? 'L' : 'D'}
+				{/* { darkMode ? 'L' : 'D'} */}
+				{/* { darkMode ? <img style={{ width: '17px'}} src="../assets/lightbulb.svg" alt="Light Mode" /> : <img style={{ width: '10px'}} src="../assets/darkbulb2.svg" alt="Dark Mode" />} */}
+				<svg width="259px" height="268px" viewBox="0 0 259 268" version="1.1">
+					<title>Group</title>
+					<g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+						<g id="Group" fill={darkMode ? '#FFFFFF' : '#000000'}>
+							<path d="M156.397,216.091 L102.982,216.091 C98.551,216.091 94.96,221.608 94.96,228.088 C94.96,234.556 98.551,240.091 102.982,240.091 L102.988,240.091 C102.946,240.091 102.946,239.443 102.898,239.518 C102.898,239.518 157.732,238.948 157.57,238.813 C161.437,237.988 164.416,233.425 164.416,227.542 C164.413,221.059 160.819,216.091 156.397,216.091 Z" id="Path" fill-rule="nonzero"></path>
+							<path d="M129.679,268 C144.433,268 156.367,261.091 156.733,249.091 L102.64,249.091 C102.991,261.091 114.931,268 129.679,268 Z" id="Path" fill-rule="nonzero"></path>
+							<path d="M129.688,52.075 C88.156,52.075 54.373,85.861 54.373,127.39 C54.373,138.946 56.998,150.502 62.344,161.341 L85.918,204.091 L170.407,204.091 L196.81,161.713 L197.212,160.795 C202.381,150.31 205,139.042 205,127.486 C205,85.957 171.217,52.075 129.688,52.075 Z M182.959,152.563 L161.518,186.094 L95.377,186.094 L76.582,152.92 C72.523,144.676 70.459,136.177 70.459,127.111 C70.459,94.45 97.021,68.026 129.688,68.026 C162.346,68.026 188.914003,94.378 188.914003,127.039 C188.917,135.967 186.913,144.415 182.959,152.563 Z" id="Shape" fill-rule="nonzero"></path>
+							<path d="M42,36 C46.418278,36 50,39.581722 50,44 L50,66 C50,70.418278 46.418278,74 42,74 C37.581722,74 34,70.418278 34,66 L34,44 C34,39.581722 37.581722,36 42,36 Z" id="Rectangle" transform="translate(42.000000, 55.000000) rotate(-50.000000) translate(-42.000000, -55.000000) " fillOpacity={darkMode ? 1 : 0}></path>
+							<rect id="Rectangle" x="122" y="-8.52651283e-14" width="16" height="38" rx="8"  fillOpacity={darkMode ? 1 : 0}></rect>
+							<rect id="Rectangle" transform="translate(20.000000, 130.000000) rotate(-88.000000) translate(-20.000000, -130.000000) " x="12" y="111" width="16" height="38" rx="8" fillOpacity={darkMode ? 1 : 0}></rect>
+							<rect id="Rectangle" transform="translate(217.000000, 55.000000) scale(-1, 1) rotate(-49.000000) translate(-217.000000, -55.000000) " x="209" y="36" width="16" height="38" rx="8"  fillOpacity={darkMode ? 1 : 0}></rect>
+							<rect id="Rectangle" transform="translate(239.000000, 130.000000) scale(-1, 1) rotate(-88.000000) translate(-239.000000, -130.000000) " x="231" y="111" width="16" height="38" rx="8"  fillOpacity={darkMode ? 1 : 0}></rect>
+						</g>
+					</g>
+				</svg>
 			</animated.button>
 			<div className="Dots">
 				<div className="wrap">
