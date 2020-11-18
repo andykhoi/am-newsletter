@@ -86,7 +86,7 @@ export const MobileAnimation: FunctionComponent = () => {
 					setEmailVisible={setEmailVisible}
 					inPosition={[0, 135, 0]}
 					sphereState={sphereState}
-					outPosition={[0, 65, 655]}
+					outPosition={[0, 60, 670]}
 					setSphereState={setSphereState}
 					breakPoint={468}
 					setColorShowActive={setColorShowActive}
