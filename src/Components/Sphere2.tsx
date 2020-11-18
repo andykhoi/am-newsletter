@@ -84,16 +84,18 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 	useFrame(() => {
 		if (sphereRef.current) {
 			sphereRef.current.rotation.y = sphereRef.current.rotation.y + 0.003
-			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 20) {
+			console.log(sphereState.direction);
+			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 30) {
 				if (sphereState.direction === 'backwards') {
 					setInstructionsState(prev => ({ ...prev, visible: true}))
 				} else {
 					setInstructionsState(prev => ({ ...prev, visible: false}))
 				}
-			} else if (sphereRef.current.position.z > 20 && sphereRef.current.position.z < 50) {
+			} else if (sphereRef.current.position.z > 30 && sphereRef.current.position.z < 80) {
 				if (sphereState.direction === 'backwards') {
 					setEmailVisible(() => true);
 				} else {
+					console.log('test')
 					setEmailVisible(() => false)
 				}
 			}
