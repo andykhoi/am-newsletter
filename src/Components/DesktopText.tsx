@@ -2,6 +2,8 @@ import React, { FunctionComponent, useRef, createRef, useEffect, useCallback, us
 import { useSpring, animated } from 'react-spring';
 import { useDidUpdate } from '../hooks/useDidUpdate';
 
+import analytics from '../utils/analytics';
+
 interface DesktopTextProps {
 	setChapterIndex: React.Dispatch<React.SetStateAction<number>>
 	chapterIndex: number | null
@@ -195,8 +197,10 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 								setChapterIndex(() => 2)
 								setBackgroundColor(() => '#9C95D6')
 								setButtonShadow(() => '1px 2px 7px #877DD8, -1px -2px 7px #BAB7D3')
+								// firebase.analytics().logEvent('finished_slide');
 							} else if (textTransitioning === 'in') {
 								setTextTransitioning(() => null)
+								analytics.logEvent('end_of_slide');
 							}
 						}}
 					><h2>Subscribe to Andy Mag for updates.</h2></span>

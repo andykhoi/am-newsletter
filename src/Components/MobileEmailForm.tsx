@@ -8,6 +8,8 @@ import { useSpring, animated } from 'react-spring';
 import { Email } from './Email';
 import { ViewportContext } from '../context/viewportContext'
 
+import analytics from '../utils/analytics';
+
 interface MobileEmailFormProps {
 	props?: any,
 	emailVisible: Boolean,
@@ -122,7 +124,14 @@ export const MobileEmailForm: FunctionComponent<MobileEmailFormProps> = ({ spher
 							</svg>
 						</div>
 					</a>
-					<a target="_blank" rel="noopener noreferrer" href="https://open.spotify.com/playlist/4FwbDv3IN0IeKszud1U0OC?si=dYtV_c9aQC2Fl2UBAUI4ww">
+					<a
+						onClick={() => analytics.logEvent('select_content', {
+
+						})}
+						target="_blank"
+						rel="noopener noreferrer"
+						href="https://open.spotify.com/playlist/4FwbDv3IN0IeKszud1U0OC?si=dYtV_c9aQC2Fl2UBAUI4ww"
+					>
 						<div className="Spotify">
 							<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1">
 								<g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">

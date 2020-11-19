@@ -6,6 +6,8 @@ import React, {
 } from 'react'
 import { useSpring, animated } from 'react-spring';
 
+import analytics from '../utils/analytics';
+
 import { ViewportContext } from '../context/viewportContext';
 
 interface EmailProps {
@@ -55,9 +57,13 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 					if (data.result === 'success') {
 						setSuccess(() => true);
 						setMessage(() => data.message);
+						analytics.logEvent('subscribed')
 					} else if (data.result === 'error') {
 						setSuccess(() => false);
 						setMessage(() => data.error);
+						analytics.logEvent('subscribe_error', {
+							message: data.error,
+						})
 					}
 					setProcessing(() => false);
 				})
@@ -65,7 +71,9 @@ export const Email: FunctionComponent<EmailProps> = ({ darkMode }) => {
 					setSuccess(() => false);
 					setMessage(() => 'An error occurred please try again.')
 					setProcessing(() => false);
-					// console.log(error)
+					analytics.logEvent('subscribe_error', {
+						message: 'client fetch error',
+					})
 				})
 			}
 		}
