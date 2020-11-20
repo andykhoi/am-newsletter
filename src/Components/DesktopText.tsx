@@ -2,6 +2,8 @@ import React, { FunctionComponent, useRef, createRef, useEffect, useCallback, us
 import { useSpring, animated } from 'react-spring';
 import { useDidUpdate } from '../hooks/useDidUpdate';
 
+import analytics from '../utils/analytics';
+
 interface DesktopTextProps {
 	setChapterIndex: React.Dispatch<React.SetStateAction<number>>
 	chapterIndex: number | null
@@ -136,10 +138,10 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 				onWheel={(e) => wheelHandler(e)}
 			>
 				<span>
-					<span><h2>Andy Mag is an experiential magazine that</h2></span>
+					<span><h2>Andy Mag is an experiential magazine—</h2></span>
 				</span>
 				<span>
-					<span style={{ transitionDelay: '0.06s'}}><h2>enables readers to interact (engage) with diverse</h2></span>
+					<span style={{ transitionDelay: '0.06s'}}><h2>telling meaningful stories and enhancing</h2></span>
 				</span>
 				<span>
 					<span 
@@ -157,7 +159,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 								setTextTransitioning(() => null)
 							}
 						}}
-					><h2>themes and ideas.</h2></span>
+					><h2>digital experiences.</h2></span>
 				</span>
 			</div>
 			<div
@@ -195,8 +197,10 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 								setChapterIndex(() => 2)
 								setBackgroundColor(() => '#9C95D6')
 								setButtonShadow(() => '1px 2px 7px #877DD8, -1px -2px 7px #BAB7D3')
+								// firebase.analytics().logEvent('finished_slide');
 							} else if (textTransitioning === 'in') {
 								setTextTransitioning(() => null)
+								analytics.logEvent('end_of_slide_desktop');
 							}
 						}}
 					><h2>Subscribe to Andy Mag for updates.</h2></span>

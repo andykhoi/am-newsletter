@@ -157,6 +157,7 @@ export const Orb: FunctionComponent<OrbProps> = ({
 				start: [100,0,0]
 			},
 		]
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	const orbPositionConfigs = useRef<any>({

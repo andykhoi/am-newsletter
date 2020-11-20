@@ -7,6 +7,7 @@ import React, {
 	useRef,
 	useState
 } from 'react';
+import analytics from '../utils/analytics';
 
 // controlling overflowed span components
 // on chapter change -- animate to next 
@@ -36,6 +37,9 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 	setSphereState,
 	darkMode
 }) => {
+	let [t1, setT1] = useState<number | null>(null);
+	let [t2, setT2] = useState<number | null>(null);
+	
 	const container = useRef<HTMLDivElement>(null);
 	// let [preventTouch, setPreventTouch] = useState<boolean>(false);
 	let [transitioning, setTransitioning] = useState<boolean>(false);
@@ -48,7 +52,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 	})
 	// console.log(container.current ? isElementAtBottom(container.current) : null)
 	const backgroundColors = useRef<any>({
-		lightMode: ['#E4F0FA', '#D64773', '#CBCBCB', '#000000'],
+		lightMode: ['#E4F0FA', '#D64773', '#dadae8', '#000000'],
 		darkMode: ['#000000', '#D64773', '#E4F0FA', '#F9FAFC']
 	})
 
@@ -265,8 +269,24 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 			} else if (getActiveSlideIndex() > chapterIndex) {
 				back();
 			}
+			
+			if (chapterIndex === 0) {
+				setT1(() => performance.now());
+				setT2(() => null); // reset every time colorshow is active
+			} else if (chapterIndex === 3) {
+				analytics.logEvent('end_of_slide_mobile');
+			}
 		}
 	}, [chapterIndex, colorShowActive, initialized, darkMode])
+
+	useEffect(() => {
+		if (t1 !== null && t2 !== null) {
+			analytics.logEvent('timing_complete', {
+				name: 'slide_time_mobile',
+				value: (t2 - t1) / 1000,
+			})
+		}
+	}, [t1, t2])
 
 	useEffect(() => {
 		if (darkMode && !initialized) {
@@ -361,6 +381,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 			init();
 		} else if (!colorShowActive && initialized) {
 			reset();
+			setT2(() => performance.now())
 		}
 	}, [colorShowActive, initialized, setSphereState, setChapterIndex, darkMode])
 
@@ -447,7 +468,7 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 				</span>
 				<span>
 					<span style={{ transitionDelay: '0.05s'}}>
-						<h4>magazine, telling meaningful</h4>
+						<h4>magazine—telling meaningful</h4>
 					</span>
 				</span>
 				<span>
@@ -495,10 +516,10 @@ export const ColorShow: FunctionComponent<ColorShowProps> = ({
 				style={{ opacity: colorShowActive ? 1 : 0 }}
 			>
 				<svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path fill-rule="evenodd" clip-rule="evenodd" d="M11.3691 6.74592C11.757 6.35382 11.7536 5.72383 11.3615 5.33594L6.74686 0.770747C6.35477 0.382855 5.72478 0.386251 5.33688 0.778347L0.771692 5.39302C0.3838 5.78512 0.387195 6.41511 0.779292 6.803C1.17139 7.19089 1.80138 7.1875 2.18927 6.7954L6.0583 2.89449L9.95916 6.75352C10.3513 7.14141 10.9912 7.12796 11.3691 6.74592Z" fill={arrowColor}/>
+					<path fillRule="evenodd" clipRule="evenodd" d="M11.3691 6.74592C11.757 6.35382 11.7536 5.72383 11.3615 5.33594L6.74686 0.770747C6.35477 0.382855 5.72478 0.386251 5.33688 0.778347L0.771692 5.39302C0.3838 5.78512 0.387195 6.41511 0.779292 6.803C1.17139 7.19089 1.80138 7.1875 2.18927 6.7954L6.0583 2.89449L9.95916 6.75352C10.3513 7.14141 10.9912 7.12796 11.3691 6.74592Z" fill={arrowColor}/>
 				</svg>
 				<svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path fill-rule="evenodd" clip-rule="evenodd" d="M11.3691 6.74592C11.757 6.35382 11.7536 5.72383 11.3615 5.33594L6.74686 0.770747C6.35477 0.382855 5.72478 0.386251 5.33688 0.778347L0.771692 5.39302C0.3838 5.78512 0.387195 6.41511 0.779292 6.803C1.17139 7.19089 1.80138 7.1875 2.18927 6.7954L6.0583 2.89449L9.95916 6.75352C10.3513 7.14141 10.9912 7.12796 11.3691 6.74592Z" fill={arrowColor} />
+					<path fillRule="evenodd" clipRule="evenodd" d="M11.3691 6.74592C11.757 6.35382 11.7536 5.72383 11.3615 5.33594L6.74686 0.770747C6.35477 0.382855 5.72478 0.386251 5.33688 0.778347L0.771692 5.39302C0.3838 5.78512 0.387195 6.41511 0.779292 6.803C1.17139 7.19089 1.80138 7.1875 2.18927 6.7954L6.0583 2.89449L9.95916 6.75352C10.3513 7.14141 10.9912 7.12796 11.3691 6.74592Z" fill={arrowColor} />
 				</svg>
 			</div>
 		</div>

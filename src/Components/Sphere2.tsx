@@ -3,13 +3,16 @@ import React, {
 	useRef,
 	useCallback,
 	useMemo,
-	useEffect,
+	useEffect, 
 	// useState,
+	// useContext,
 } from 'react';
 import * as THREE from 'three/';
 import { useFrame, useThree } from 'react-three-fiber';
 import { useSpring, a } from 'react-spring/three'
 import { DoubleSide } from 'three/';
+
+// import { ViewportContext } from '../context/viewportContext';
 
 interface SphereProps {
 	radius: number,
@@ -58,6 +61,8 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 				- opacity fade in
 				- orbLive ? --> fade and ease in to start position, 
 	*/ 
+	// const { currentDeviceWidth } = useContext(ViewportContext);
+
 	const sphereRef = useRef<any>(null);
 	const {
 		camera,
@@ -68,6 +73,8 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		size,
 	}: { camera: any, viewport: any, size: any } = useThree();
 
+	// let [scale, setScale] = useState([size.width - 220, size.width - 220, size.width - 220]);
+
 	const defaultPointSize = useRef<number>(1.7);
 	const inPosition: [number, number, number] = [0, 0, 0];
 	const outPosition: [number, number, number] = [0, -size.height / 9, 626];
@@ -76,7 +83,20 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 
 	useFrame(() => {
 		if (sphereRef.current) {
-			return sphereRef.current.rotation.y = sphereRef.current.rotation.y + 0.003
+			sphereRef.current.rotation.y = sphereRef.current.rotation.y + 0.003
+			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 30) {
+				if (sphereState.direction === 'backwards') {
+					setInstructionsState(prev => ({ ...prev, visible: true}))
+				} else {
+					setInstructionsState(prev => ({ ...prev, visible: false}))
+				}
+			} else if (sphereRef.current.position.z > 30 && sphereRef.current.position.z < 80) {
+				if (sphereState.direction === 'backwards') {
+					setEmailVisible(() => true);
+				} else {
+					setEmailVisible(() => false)
+				}
+			}
 		}
 	});
 
@@ -135,21 +155,21 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		config: { mass: 1.8, tension: 84, friction: 22, clamp: true },
 		pointsPosition: setPosition(),
 		opacity: sphereState.mountAnimating ? 0 : 1,
-		onFrame: (arg: any) => {
-			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 20) {
-				if (sphereState.direction === 'backwards') {
-					setInstructionsState(prev => ({ ...prev, visible: true}))
-				} else {
-					setInstructionsState(prev => ({ ...prev, visible: false}))
-				}
-			} else if (sphereRef.current.position.z > 20 && sphereRef.current.position.z < 50) {
-				if (sphereState.direction === 'backwards') {
-					setEmailVisible(() => true);
-				} else {
-					setEmailVisible(() => false)
-				}
-			}
-		},
+		// onFrame: (arg: any) => {
+		// 	if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 20) {
+		// 		if (sphereState.direction === 'backwards') {
+		// 			setInstructionsState(prev => ({ ...prev, visible: true}))
+		// 		} else {
+		// 			setInstructionsState(prev => ({ ...prev, visible: false}))
+		// 		}
+		// 	} else if (sphereRef.current.position.z > 20 && sphereRef.current.position.z < 50) {
+		// 		if (sphereState.direction === 'backwards') {
+		// 			setEmailVisible(() => true);
+		// 		} else {
+		// 			setEmailVisible(() => false)
+		// 		}
+		// 	}
+		// },
 		onRest: (arg: any) => {
 			if (outPosition.every((position: number, index: number) => {
 				if (!sphereState.mountAnimating) {
@@ -175,6 +195,9 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 		if (size.height && camera) {
 			sphereRef.current.material.size = defaultPointSize.current / Math.tan( ( Math.PI / 180 ) * camera.fov / 2 )
 			camera.lookAt(0, (-size.height / 6.5), 0);
+			// setScale(() => {
+			// 	return [size.width - 220, size.width - 220, size.width - 220]
+			// })
 		}
 	}, [size, camera])
 
@@ -207,6 +230,7 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 				})}
 				onPointerUp={() => pointerUpHandler()}
 				position={sphereAnimationProps.circlePosition}
+				// scale={scale}
 			>
 				<sphereBufferGeometry
 					attach='geometry'
@@ -218,7 +242,7 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 				ref={sphereRef}
 				// ref={sphereRef}
 				position={sphereAnimationProps.pointsPosition}
-				// scale={[1,1,1]}
+				// scale={scale}
 			>	
 				<geometry
 					attach='geometry'

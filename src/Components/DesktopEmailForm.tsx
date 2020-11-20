@@ -9,6 +9,8 @@ import
 from 'react';
 import { useSpring, animated } from 'react-spring';
 
+import analytics from '../utils/analytics';
+
 interface DesktopEmailProps {
 	emailActive: boolean
 	orbHold: boolean
@@ -106,9 +108,13 @@ export const Email: FunctionComponent<DesktopEmailProps> = ({
 					if (data.result === 'success') {
 						setSuccess(() => true);
 						setMessage(() => data.message);
+						analytics.logEvent('subscribed')
 					} else if (data.result === 'error') {
 						setSuccess(() => false);
 						setMessage(() => data.error);
+						analytics.logEvent('subscribe_error', {
+							message: data.error,
+						})
 					}
 					setProcessing(() => false);
 				})
@@ -116,6 +122,9 @@ export const Email: FunctionComponent<DesktopEmailProps> = ({
 					setSuccess(() => false);
 					setMessage(() => 'An error occurred please try again.')
 					setProcessing(() => false);
+					analytics.logEvent('subscribe_error', {
+						message: 'client fetch error',
+					})
 					// console.log(error)
 				})
 			}
@@ -164,8 +173,8 @@ export const Email: FunctionComponent<DesktopEmailProps> = ({
 							}
 						}}
 					>
-						<g id="Desktop-v2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-							<g id="SIGN-UP" transform="translate(-949.000000, -420.000000)" fill={success ? '#47C34A' : inputFocus ? '#C247C3' : '#FFFFFF'} fill-rule="nonzero">
+						<g id="Desktop-v2" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+							<g id="SIGN-UP" transform="translate(-949.000000, -420.000000)" fill={success ? '#47C34A' : inputFocus ? '#C247C3' : '#FFFFFF'} fillRule="nonzero">
 								<g id="Group-3" transform="translate(668.000000, 292.000000)">
 									<g id="no-box-form" transform="translate(0.000000, 99.000000)">
 										<g id="Button" transform="translate(10.000000, 20.000000)">
