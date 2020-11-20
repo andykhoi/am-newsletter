@@ -20,7 +20,6 @@ function App() {
 	var ua = navigator.userAgent || navigator.vendor
 	var isInstagram = (ua.indexOf('Instagram') > -1) ? true : false;
 	
-	// const App = isInstagram ? MobileApp : isMobile ? 
 	let App;
 	if (isInstagram) {
 		App = MobileApp;
