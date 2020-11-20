@@ -185,7 +185,7 @@ export const ViewportContextWrapper: FunctionComponent = (props) => {
 
 		// setIsMobile
 	}
-
+	// console.log(isMobile, currentDeviceHeight, currentDeviceWidth);
 	return (
 		<ViewportContext.Provider value={store}> 
 			{ props.children }
