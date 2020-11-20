@@ -4,7 +4,7 @@ import React, {
 	useCallback,
 	useMemo,
 	useEffect, 
-	useState,
+	// useState,
 	// useContext,
 } from 'react';
 import * as THREE from 'three/';
@@ -84,7 +84,6 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 	useFrame(() => {
 		if (sphereRef.current) {
 			sphereRef.current.rotation.y = sphereRef.current.rotation.y + 0.003
-			console.log(sphereState.direction);
 			if (sphereRef.current.position.z > 0 && sphereRef.current.position.z < 30) {
 				if (sphereState.direction === 'backwards') {
 					setInstructionsState(prev => ({ ...prev, visible: true}))
@@ -95,7 +94,6 @@ export const Sphere: FunctionComponent<SphereProps> = ({
 				if (sphereState.direction === 'backwards') {
 					setEmailVisible(() => true);
 				} else {
-					console.log('test')
 					setEmailVisible(() => false)
 				}
 			}

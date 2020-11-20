@@ -200,7 +200,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 								// firebase.analytics().logEvent('finished_slide');
 							} else if (textTransitioning === 'in') {
 								setTextTransitioning(() => null)
-								analytics.logEvent('end_of_slide');
+								analytics.logEvent('end_of_slide_desktop');
 							}
 						}}
 					><h2>Subscribe to Andy Mag for updates.</h2></span>
