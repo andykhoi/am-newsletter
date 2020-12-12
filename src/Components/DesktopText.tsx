@@ -25,6 +25,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 	subscribeActive
 }) => {
 	let chapterRefs = useRef<React.RefObject<HTMLDivElement>[]>([createRef<HTMLDivElement>(), createRef<HTMLDivElement>(), createRef<HTMLDivElement>(), createRef<HTMLDivElement>()]);
+	let timeout = useRef<number>();
 	let [textTransitioning, setTextTransitioning] = useState<'out-down' | 'out-up' | 'in' | null>(null)
 
 	const textAnimation = useSpring({
@@ -53,9 +54,25 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 		const {
 			current: chapter = null
 		} = chapterRefs.current[0]
-
 		chapter?.classList.remove('out-down')
 	}, [])
+
+	const createTimeout = useCallback(() => {
+		return window.setTimeout(() => {
+			if (textTransitioning === null) {	
+				if (chapterIndex !== null) {
+					const {
+						current: chapter = null
+					} = chapterRefs.current[chapterIndex]
+					if (chapterIndex < 3) {
+						chapter?.classList.add('out-up');
+						setTextTransitioning(() => 'out-up')
+						setOrbMovingState(() => 'out')
+					}
+				}
+			}
+		}, 7000)
+	}, [chapterIndex, textTransitioning, setOrbMovingState])
 
 	useEffect(() => {
 		if (subscribeActive) {
@@ -88,10 +105,12 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 						current: chapter = null
 					} = chapterRefs.current[chapterIndex]
 					if (deltaY > 0 && chapterIndex < 3) {
+						window.clearTimeout(timeout.current)
 						chapter?.classList.add('out-up');
 						setTextTransitioning(() => 'out-up')
 						setOrbMovingState(() => 'out')
 					} else if (deltaY < 0 && chapterIndex > 0) {
+						window.clearTimeout(timeout.current)
 						chapter?.classList.add('out-down');
 						setTextTransitioning(() => 'out-down')
 						setOrbMovingState(() => 'out')
@@ -100,6 +119,14 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 			}
 		}
 	}, [chapterIndex, wheelThreshold, textTransitioning, setOrbMovingState])
+
+	useEffect(() => {
+		if (!textTransitioning) {
+			timeout.current = createTimeout();
+		}
+	}, [textTransitioning, createTimeout])
+
+	
 
 	return (
 		<animated.div className="Text grid" style={textAnimation}>
