@@ -121,12 +121,14 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 	}, [chapterIndex, wheelThreshold, textTransitioning, setOrbMovingState])
 
 	useEffect(() => {
-		if (!textTransitioning) {
-			timeout.current = createTimeout();
+		if (!subscribeActive) {
+			if (!textTransitioning) {
+				timeout.current = createTimeout();
+			}
+		} else {
+			window.clearTimeout(timeout.current)
 		}
-	}, [textTransitioning, createTimeout])
-
-	
+	}, [textTransitioning, createTimeout, subscribeActive])
 
 	return (
 		<animated.div className="Text grid" style={textAnimation}>
