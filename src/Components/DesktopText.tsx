@@ -58,21 +58,24 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 	}, [])
 
 	const createTimeout = useCallback(() => {
+		// console.log(chapterIndex);
 		return window.setTimeout(() => {
-			if (textTransitioning === null) {	
-				if (chapterIndex !== null) {
-					const {
-						current: chapter = null
-					} = chapterRefs.current[chapterIndex]
-					if (chapterIndex < 3) {
-						chapter?.classList.add('out-up');
-						setTextTransitioning(() => 'out-up')
-						setOrbMovingState(() => 'out')
+			if (!subscribeActive) {
+				if (textTransitioning === null) {	
+					if (chapterIndex !== null) {
+						const {
+							current: chapter = null
+						} = chapterRefs.current[chapterIndex]
+						if (chapterIndex >= 0 && chapterIndex < 3) {
+							chapter?.classList.add('out-up');
+							setTextTransitioning(() => 'out-up')
+							setOrbMovingState(() => 'out')
+						}
 					}
 				}
 			}
-		}, 7000)
-	}, [chapterIndex, textTransitioning, setOrbMovingState])
+		}, 11000)
+	}, [chapterIndex, textTransitioning, setOrbMovingState, subscribeActive])
 
 	useEffect(() => {
 		if (subscribeActive) {
@@ -106,11 +109,13 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 					} = chapterRefs.current[chapterIndex]
 					if (deltaY > 0 && chapterIndex < 3) {
 						window.clearTimeout(timeout.current)
+						// console.log('removed: ' + timeout.current)
 						chapter?.classList.add('out-up');
 						setTextTransitioning(() => 'out-up')
 						setOrbMovingState(() => 'out')
 					} else if (deltaY < 0 && chapterIndex > 0) {
 						window.clearTimeout(timeout.current)
+						// console.log('removed: ' + timeout.current)
 						chapter?.classList.add('out-down');
 						setTextTransitioning(() => 'out-down')
 						setOrbMovingState(() => 'out')
@@ -122,13 +127,16 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 
 	useEffect(() => {
 		if (!subscribeActive) {
-			if (!textTransitioning) {
+			if (!textTransitioning && chapterIndex !== 3) {
 				timeout.current = createTimeout();
+				// console.log(timeout.current)
 			}
 		} else {
 			window.clearTimeout(timeout.current)
+			console.log('removed: ' + timeout.current)
+			setTextTransitioning(() => null)
 		}
-	}, [textTransitioning, createTimeout, subscribeActive])
+	}, [textTransitioning, createTimeout, subscribeActive, chapterIndex])
 
 	return (
 		<animated.div className="Text grid" style={textAnimation}>
