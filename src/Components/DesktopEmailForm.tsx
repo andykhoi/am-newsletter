@@ -105,6 +105,7 @@ export const Email: FunctionComponent<DesktopEmailProps> = ({
 					return res.json()
 				})
 				.then(data => {
+					console.log(data);
 					if (data.result === 'success') {
 						setSuccess(() => true);
 						setMessage(() => data.message);
@@ -125,7 +126,7 @@ export const Email: FunctionComponent<DesktopEmailProps> = ({
 					analytics.logEvent('subscribe_error', {
 						message: 'client fetch error',
 					})
-					// console.log(error)
+					console.log(error)
 				})
 			}
 		}

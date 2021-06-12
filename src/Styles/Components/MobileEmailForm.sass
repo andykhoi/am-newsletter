@@ -62,11 +62,19 @@
 				svg
 					width: 24px
 					height: 24px
-	
+	&.darkMode
+		.SocialMedia
+			.wrap
+				> * div
+					border: none
+					box-shadow: 2px 3px 15px #00000033
+.hover
+	z-index: 10
+	position: relative
 	.mode-switch
 		border: none
 		-webkit-appearance: none
-		position: fixed
+		position: absolute
 		bottom: 10px
 		right: 10px
 		// align-self: flex-end
@@ -91,7 +99,7 @@
 		&:focus
 			outline: none
 	.Dots
-		position: fixed
+		position: absolute
 		bottom: 10px
 		left: 0
 		right: 0
@@ -114,10 +122,4 @@
 				position: absolute
 				// right: 0
 			.page
-	&.darkMode
-		.SocialMedia
-			.wrap
-				> * div
-					border: none
-					box-shadow: 2px 3px 15px #00000033
 					

@@ -25,6 +25,7 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 	subscribeActive
 }) => {
 	let chapterRefs = useRef<React.RefObject<HTMLDivElement>[]>([createRef<HTMLDivElement>(), createRef<HTMLDivElement>(), createRef<HTMLDivElement>(), createRef<HTMLDivElement>()]);
+	let timeout = useRef<number>();
 	let [textTransitioning, setTextTransitioning] = useState<'out-down' | 'out-up' | 'in' | null>(null)
 
 	const textAnimation = useSpring({
@@ -53,9 +54,28 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 		const {
 			current: chapter = null
 		} = chapterRefs.current[0]
-
 		chapter?.classList.remove('out-down')
 	}, [])
+
+	const createTimeout = useCallback(() => {
+		// console.log(chapterIndex);
+		return window.setTimeout(() => {
+			if (!subscribeActive) {
+				if (textTransitioning === null) {	
+					if (chapterIndex !== null) {
+						const {
+							current: chapter = null
+						} = chapterRefs.current[chapterIndex]
+						if (chapterIndex >= 0 && chapterIndex < 3) {
+							chapter?.classList.add('out-up');
+							setTextTransitioning(() => 'out-up')
+							setOrbMovingState(() => 'out')
+						}
+					}
+				}
+			}
+		}, 11000)
+	}, [chapterIndex, textTransitioning, setOrbMovingState, subscribeActive])
 
 	useEffect(() => {
 		if (subscribeActive) {
@@ -88,10 +108,14 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 						current: chapter = null
 					} = chapterRefs.current[chapterIndex]
 					if (deltaY > 0 && chapterIndex < 3) {
+						window.clearTimeout(timeout.current)
+						// console.log('removed: ' + timeout.current)
 						chapter?.classList.add('out-up');
 						setTextTransitioning(() => 'out-up')
 						setOrbMovingState(() => 'out')
 					} else if (deltaY < 0 && chapterIndex > 0) {
+						window.clearTimeout(timeout.current)
+						// console.log('removed: ' + timeout.current)
 						chapter?.classList.add('out-down');
 						setTextTransitioning(() => 'out-down')
 						setOrbMovingState(() => 'out')
@@ -100,6 +124,19 @@ export const DesktopText: FunctionComponent<DesktopTextProps> = ({
 			}
 		}
 	}, [chapterIndex, wheelThreshold, textTransitioning, setOrbMovingState])
+
+	useEffect(() => {
+		if (!subscribeActive) {
+			if (!textTransitioning && chapterIndex !== 3) {
+				timeout.current = createTimeout();
+				// console.log(timeout.current)
+			}
+		} else {
+			window.clearTimeout(timeout.current)
+			console.log('removed: ' + timeout.current)
+			setTextTransitioning(() => null)
+		}
+	}, [textTransitioning, createTimeout, subscribeActive, chapterIndex])
 
 	return (
 		<animated.div className="Text grid" style={textAnimation}>

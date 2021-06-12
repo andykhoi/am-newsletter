@@ -72,15 +72,15 @@ export const Orb: FunctionComponent<OrbProps> = ({
 		{
 			textRef1: {
 				position: [0,51,0],
-				geometry: [647, 26, 0]
+				geometry: [595, 26, 0]
 			},
 			textRef2: {
 				position: [0,-1,0],
-				geometry: [748, 26, 0]
+				geometry: [615, 26, 0]
 			},
 			textRef3: {
 				position: [0,-51,0],
-				geometry: [272, 26, 0]
+				geometry: [295, 26, 0]
 			},
 		},
 		{
@@ -336,21 +336,6 @@ export const Orb: FunctionComponent<OrbProps> = ({
 	const updateOrbMaskSphereBboxCenter = useCallback(() => {
 		if (orbMaskSphereBbox.current !== null) orbMaskSphereBbox.current.center = new THREE.Vector3(orbMask.current.position.x, orbMask.current.position.y, orbMask.current.position.z)
 	}, [])
-
-	// const atHoldThresholdAutomator = useCallback(() => {
-	// 	// set orb opacity to 0, return to first chapter slide,
-	// 	setBackgroundColor(() => '#D695AB')
-	// 	setButtonShadow(() => '1px 2px 7px 0px #576F6F6F, -1px -2px 7px #A6D3D3D3')
-	// 	setOrbOpacity(() => 0)
-	// 	setChapterIndex(() => 0)
-	// 	setSubscribeActive(() => false)
-	// 	setOrbMovingState(() => 'out')
-	// 	setEmailActive(() => false)
-	// }, [setChapterIndex, setBackgroundColor, setButtonShadow, setOrbOpacity, setSubscribeActive, setEmailActive, setOrbMovingState])
-	// const atHoldThresholdAutomator = useCallback(() => {
-	// 	// set orb opacity to 0, return to first chapter slide,
-	// 	setOrbMovingState(() => 'at_threshold');
-	// }, [setOrbMovingState])
 
 	const getClosestSide = useCallback((): string | null => {
 		if (orbRef.current !== null ) {
